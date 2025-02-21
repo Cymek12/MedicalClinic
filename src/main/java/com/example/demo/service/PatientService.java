@@ -1,15 +1,15 @@
 package com.example.demo.service;
 
+import com.example.demo.exceptions.PatientNotFoundException;
 import com.example.demo.model.Patient;
 import com.example.demo.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PatientService {
-    private PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
 
     public PatientService(PatientRepository patientRepository) {
         this.patientRepository = patientRepository;
@@ -20,40 +20,23 @@ public class PatientService {
     }
 
     public Patient getPatientByEmail(String email) {
-        Optional<Patient> optionalPatient = patientRepository.getPatientByEmail(email);
-        if (optionalPatient.isPresent()) {
-            return optionalPatient.get();
-        }
-        return null;
+        return patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
     }
 
-    public void addNewPatient(Patient patient) {
-        patientRepository.addNewPatient(patient);
+    public void addPatient(Patient patient) {
+        patientRepository.addPatient(patient);
     }
 
-    public boolean deletePatientByEmail(String email) {
-        Optional<Patient> optionalPatient = patientRepository.getPatientByEmail(email);
-        if (optionalPatient.isPresent()) {
-            Patient patient = optionalPatient.get();
-            patientRepository.getPatients().remove(patient);
-            return true;
-        }
-        return false;
+    public void deletePatientByEmail(String email) {
+        Patient patient = patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+        patientRepository.deletePatient(patient);
     }
 
-    public boolean editPatient(String email, Patient newPatient) {
-        Optional<Patient> optionalPatient = patientRepository.getPatientByEmail(email);
-        if(optionalPatient.isPresent()){
-            Patient patient = optionalPatient.get();
-            patient.setEmail(newPatient.getEmail());
-            patient.setPassword(newPatient.getPassword());
-            patient.setIdCardNo(newPatient.getIdCardNo());
-            patient.setFirstName(newPatient.getFirstName());
-            patient.setLastName(newPatient.getLastName());
-            patient.setPhoneNumber(newPatient.getPhoneNumber());
-            patient.setBirthday(newPatient.getBirthday());
-            return true;
-        }
-        return false;
+    public void editPatient(String email, Patient newPatientData) {
+        Patient patient = patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+        patientRepository.editPatient(patient, newPatientData);
     }
 }

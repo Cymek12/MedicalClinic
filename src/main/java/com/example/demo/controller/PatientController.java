@@ -9,34 +9,34 @@ import java.util.List;
 @RestController
 @RequestMapping("/patients")
 public class PatientController {
-    private PatientService patientService;
+    private final PatientService patientService;
 
     public PatientController(PatientService patientService) {
         this.patientService = patientService;
     }
 
     @GetMapping
-    public List<Patient> getPatients(){
+    public List<Patient> getPatients() {
         return patientService.getPatients();
     }
 
     @GetMapping("/{email}")
-    public Patient getPatientByEmail(@PathVariable("email") String email){
+    public Patient getPatientByEmail(@PathVariable("email") String email) {
         return patientService.getPatientByEmail(email);
     }
 
     @PostMapping
-    public void addNewPatient(@RequestBody Patient patient){
-        patientService.addNewPatient(patient);
+    public void addPatient(@RequestBody Patient patient) {
+        patientService.addPatient(patient);
     }
 
     @DeleteMapping("/{email}")
-    public void deletePatientByEmail(@PathVariable("email") String email){
+    public void deletePatientByEmail(@PathVariable("email") String email) {
         patientService.deletePatientByEmail(email);
     }
 
     @PutMapping("/{email}")
-    public boolean editPatient(@PathVariable("email") String email, @RequestBody Patient newPatient) {
-        return patientService.editPatient(email, newPatient);
+    public void editPatient(@PathVariable("email") String email, @RequestBody Patient newPatientData) {
+        patientService.editPatient(email, newPatientData);
     }
 }

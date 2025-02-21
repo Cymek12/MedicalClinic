@@ -1,17 +1,18 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Patient {
     private String email;
     private String password;
-    private Long idCardNo;
+    private String idCardNo;
     private String firstName;
     private String lastName;
-    private Long phoneNumber;
-    private String birthday;
+    private String phoneNumber;
+    private LocalDate birthday;
 
-    public Patient(String email, String password, Long idCardNo, String firstName, String lastName, Long phoneNumber, String birthday) {
+    public Patient(String email, String password, String idCardNo, String firstName, String lastName, String phoneNumber, LocalDate birthday) {
         this.email = email;
         this.password = password;
         this.idCardNo = idCardNo;
@@ -37,11 +38,11 @@ public class Patient {
         this.password = password;
     }
 
-    public Long getIdCardNo() {
+    public String getIdCardNo() {
         return idCardNo;
     }
 
-    public void setIdCardNo(Long idCardNo) {
+    public void setIdCardNo(String idCardNo) {
         this.idCardNo = idCardNo;
     }
 
@@ -61,19 +62,19 @@ public class Patient {
         this.lastName = lastName;
     }
 
-    public Long getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Long phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(String birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 
@@ -93,11 +94,11 @@ public class Patient {
         return "Patient{" +
                 "email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", idCardNo=" + idCardNo +
+                ", idCardNo='" + idCardNo + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", phoneNumber=" + phoneNumber +
-                ", birthday='" + birthday + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", birthday=" + birthday +
                 '}';
     }
 }
