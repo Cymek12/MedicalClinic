@@ -1,5 +1,6 @@
 package com.example.demo.repository;
 
+import com.example.demo.exceptions.PatientAlreadyExistException;
 import com.example.demo.model.Patient;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +27,9 @@ public class PatientRepository {
     }
 
     public void addPatient(Patient patient) {
+        if (getPatientByEmail(patient.getEmail()).isPresent()){
+            throw new PatientAlreadyExistException("Patient with email: " + patient.getEmail() + " already exist");
+        }
         patients.add(patient);
     }
 
