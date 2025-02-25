@@ -45,4 +45,8 @@ public class PatientRepository {
         patient.setPhoneNumber(newPatientData.getPhoneNumber());
         patient.setBirthday(newPatientData.getBirthday());
     }
+
+    public void editPassword(Patient patient, String newPassword) {
+        patient.setPassword(newPassword);
+    }
 }

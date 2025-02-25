@@ -1,9 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.exceptions.PatientNotFoundException;
+import com.example.demo.model.NewPassword;
 import com.example.demo.model.Patient;
 import com.example.demo.repository.PatientRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,5 +37,11 @@ public class PatientService {
         Patient patient = patientRepository.getPatientByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         patientRepository.editPatient(patient, newPatientData);
+    }
+
+    public void editPassword(String email, NewPassword newPassword) {
+        Patient patient = patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+        patientRepository.editPassword(patient, newPassword.getNewPassword());
     }
 }
