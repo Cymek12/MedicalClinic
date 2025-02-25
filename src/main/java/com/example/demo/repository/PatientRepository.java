@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import com.example.demo.exceptions.PatientAlreadyExistException;
 import com.example.demo.model.Patient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,12 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class PatientRepository {
     private final List<Patient> patients;
 
-    public PatientRepository(List<Patient> patients) {
-        this.patients = patients;
-    }
 
     public List<Patient> getPatients() {
         return new ArrayList<>(patients);
@@ -27,7 +26,7 @@ public class PatientRepository {
     }
 
     public void addPatient(Patient patient) {
-        if (getPatientByEmail(patient.getEmail()).isPresent()){
+        if (getPatientByEmail(patient.getEmail()).isPresent()) {
             throw new PatientAlreadyExistException("Patient with email: " + patient.getEmail() + " already exist");
         }
         patients.add(patient);
