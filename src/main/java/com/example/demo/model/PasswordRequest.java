@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class NewPassword {
+public class PasswordRequest {
     private String newPassword;
 }

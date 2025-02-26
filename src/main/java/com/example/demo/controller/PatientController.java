@@ -1,8 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.NewPassword;
+import com.example.demo.model.PasswordRequest;
 import com.example.demo.model.Patient;
 import com.example.demo.service.PatientService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +41,7 @@ public class PatientController {
     }
 
     @PatchMapping("/{email}")
-    public void editPassword(@PathVariable("email") String email, @RequestBody NewPassword newPassword) {
+    public void editPassword(@PathVariable("email") String email, @RequestBody PasswordRequest newPassword) {
         patientService.editPassword(email, newPassword);
     }
 }

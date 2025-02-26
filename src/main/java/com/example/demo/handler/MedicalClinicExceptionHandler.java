@@ -1,5 +1,6 @@
 package com.example.demo.handler;
 
+import com.example.demo.exceptions.CannotChangeIdCardNoException;
 import com.example.demo.exceptions.PatientAlreadyExistException;
 import com.example.demo.exceptions.PatientNotFoundException;
 import com.example.demo.model.ErrorMessage;
@@ -23,5 +24,17 @@ public class MedicalClinicExceptionHandler extends ResponseEntityExceptionHandle
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorMessage handlePatientAlreadyExistException(PatientAlreadyExistException ex) {
         return new ErrorMessage(ex.getMessage(), HttpStatus.BAD_REQUEST, new Date());
+    }
+
+    @ExceptionHandler(CannotChangeIdCardNoException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleCannotChangeIdCardNoException(CannotChangeIdCardNoException ex) {
+        return new ErrorMessage(ex.getMessage(), HttpStatus.BAD_REQUEST, new Date());
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleNullPointerException(NullPointerException ex) {
+        return new ErrorMessage("Data cannot be null", HttpStatus.BAD_REQUEST, new Date());
     }
 }

@@ -1,7 +1,9 @@
 package com.example.demo.repository;
 
+import com.example.demo.exceptions.CannotChangeIdCardNoException;
 import com.example.demo.exceptions.PatientAlreadyExistException;
 import com.example.demo.model.Patient;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -37,9 +39,11 @@ public class PatientRepository {
     }
 
     public void editPatient(Patient patient, Patient newPatientData) {
+        if(!patient.getIdCardNo().equals(newPatientData.getIdCardNo())){
+            throw new CannotChangeIdCardNoException("Id card number is unchangeable");
+        }
         patient.setEmail(newPatientData.getEmail());
         patient.setPassword(newPatientData.getPassword());
-        patient.setIdCardNo(newPatientData.getIdCardNo());
         patient.setFirstName(newPatientData.getFirstName());
         patient.setLastName(newPatientData.getLastName());
         patient.setPhoneNumber(newPatientData.getPhoneNumber());

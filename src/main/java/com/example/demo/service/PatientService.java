@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.exceptions.PatientNotFoundException;
-import com.example.demo.model.NewPassword;
+import com.example.demo.model.PasswordRequest;
 import com.example.demo.model.Patient;
 import com.example.demo.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,20 +28,17 @@ public class PatientService {
     }
 
     public void deletePatientByEmail(String email) {
-        Patient patient = patientRepository.getPatientByEmail(email)
-                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+        Patient patient = getPatientByEmail(email);
         patientRepository.deletePatient(patient);
     }
 
     public void editPatient(String email, Patient newPatientData) {
-        Patient patient = patientRepository.getPatientByEmail(email)
-                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+        Patient patient = getPatientByEmail(email);
         patientRepository.editPatient(patient, newPatientData);
     }
 
-    public void editPassword(String email, NewPassword newPassword) {
-        Patient patient = patientRepository.getPatientByEmail(email)
-                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+    public void editPassword(String email, PasswordRequest newPassword) {
+        Patient patient = getPatientByEmail(email);
         patientRepository.editPassword(patient, newPassword.getNewPassword());
     }
 }
