@@ -4,7 +4,6 @@ import com.example.demo.exceptions.CannotChangeIdCardNoException;
 import com.example.demo.exceptions.PatientAlreadyExistException;
 import com.example.demo.exceptions.PatientDataIsNullException;
 import com.example.demo.model.Patient;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -40,11 +39,14 @@ public class PatientRepository {
     }
 
     public void editPatient(Patient patient, Patient newPatientData) {
-        if(!patient.getIdCardNo().equals(newPatientData.getIdCardNo())){
+        if (!patient.getIdCardNo().equals(newPatientData.getIdCardNo())) {
             throw new CannotChangeIdCardNoException("Id card number is unchangeable");
         }
-        if(isPatientDataNull(newPatientData)){
+        if (isPatientDataNull(newPatientData)) {
             throw new PatientDataIsNullException("Patient fields cannot be null");
+        }
+        if(isEmailExist(newPatientData.getEmail())){
+            throw new PatientAlreadyExistException("Email: " + newPatientData.getEmail() + " is reserved");
         }
         patient.setEmail(newPatientData.getEmail());
         patient.setPassword(newPatientData.getPassword());
@@ -54,8 +56,8 @@ public class PatientRepository {
         patient.setBirthday(newPatientData.getBirthday());
     }
 
-    public boolean isPatientDataNull(Patient patient){
-         return patient.getEmail() == null ||
+    public boolean isPatientDataNull(Patient patient) {
+        return patient.getEmail() == null ||
                 patient.getPassword() == null ||
                 patient.getIdCardNo() == null ||
                 patient.getFirstName() == null ||
@@ -66,5 +68,12 @@ public class PatientRepository {
 
     public void editPassword(Patient patient, String newPassword) {
         patient.setPassword(newPassword);
+    }
+
+    public boolean isEmailExist(String email) {
+        Optional<Patient> optPatient = patients.stream()
+                .filter(patient -> patient.getEmail().equals(email))
+                .findAny();
+        return optPatient.isPresent();
     }
 }

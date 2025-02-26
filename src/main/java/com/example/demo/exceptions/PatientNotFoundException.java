@@ -1,7 +1,9 @@
 package com.example.demo.exceptions;
 
-public class PatientNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class PatientNotFoundException extends WebException {
     public PatientNotFoundException(String message) {
-        super(message);
+        super(message, HttpStatus.NOT_FOUND);
     }
 }

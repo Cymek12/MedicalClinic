@@ -1,7 +1,9 @@
 package com.example.demo.exceptions;
 
-public class CannotChangeIdCardNoException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class CannotChangeIdCardNoException extends WebException {
     public CannotChangeIdCardNoException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }

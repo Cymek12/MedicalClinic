@@ -1,7 +1,9 @@
 package com.example.demo.exceptions;
 
-public class PatientAlreadyExistException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class PatientAlreadyExistException extends WebException {
     public PatientAlreadyExistException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 }
