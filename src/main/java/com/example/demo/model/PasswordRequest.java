@@ -1,10 +1,7 @@
 package com.example.demo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
 
-@AllArgsConstructor
-@Getter
-public class PasswordRequest {
-    private String newPassword;
+@Builder
+public record PasswordRequest(String newPassword) {
 }

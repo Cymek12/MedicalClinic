@@ -2,6 +2,7 @@ package com.example.demo.handler;
 
 import com.example.demo.exceptions.CannotChangeIdCardNoException;
 import com.example.demo.exceptions.PatientAlreadyExistException;
+import com.example.demo.exceptions.PatientDataIsNullException;
 import com.example.demo.exceptions.PatientNotFoundException;
 import com.example.demo.model.ErrorMessage;
 import org.springframework.http.HttpStatus;
@@ -32,9 +33,9 @@ public class MedicalClinicExceptionHandler extends ResponseEntityExceptionHandle
         return new ErrorMessage(ex.getMessage(), HttpStatus.BAD_REQUEST, new Date());
     }
 
-    @ExceptionHandler(NullPointerException.class)
+    @ExceptionHandler(PatientDataIsNullException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessage handleNullPointerException(NullPointerException ex) {
-        return new ErrorMessage("Data cannot be null", HttpStatus.BAD_REQUEST, new Date());
+    public ErrorMessage handlePatientDataIsNullException (PatientDataIsNullException ex) {
+        return new ErrorMessage(ex.getMessage(), HttpStatus.BAD_REQUEST, new Date());
     }
 }

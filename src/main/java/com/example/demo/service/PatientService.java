@@ -39,6 +39,6 @@ public class PatientService {
 
     public void editPassword(String email, PasswordRequest newPassword) {
         Patient patient = getPatientByEmail(email);
-        patientRepository.editPassword(patient, newPassword.getNewPassword());
+        patientRepository.editPassword(patient, newPassword.newPassword());
     }
 }
