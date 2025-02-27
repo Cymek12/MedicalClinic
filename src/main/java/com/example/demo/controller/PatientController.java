@@ -4,7 +4,6 @@ import com.example.demo.model.PasswordRequest;
 import com.example.demo.model.Patient;
 import com.example.demo.model.PatientDTO;
 import com.example.demo.service.PatientService;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
