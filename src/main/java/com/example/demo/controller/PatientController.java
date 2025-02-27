@@ -2,9 +2,11 @@ package com.example.demo.controller;
 
 import com.example.demo.model.PasswordRequest;
 import com.example.demo.model.Patient;
+import com.example.demo.model.PatientDTO;
 import com.example.demo.service.PatientService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,16 +18,17 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping
-    public List<Patient> getPatients() {
+    public List<PatientDTO> getPatients() {
         return patientService.getPatients();
     }
 
     @GetMapping("/{email}")
-    public Patient getPatientByEmail(@PathVariable("email") String email) {
+    public PatientDTO getPatientByEmail(@PathVariable("email") String email) {
         return patientService.getPatientByEmail(email);
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addPatient(@RequestBody Patient patient) {
         patientService.addPatient(patient);
     }

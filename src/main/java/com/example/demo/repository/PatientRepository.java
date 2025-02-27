@@ -4,6 +4,7 @@ import com.example.demo.exceptions.CannotChangeIdCardNoException;
 import com.example.demo.exceptions.PatientAlreadyExistException;
 import com.example.demo.exceptions.PatientDataIsNullException;
 import com.example.demo.model.Patient;
+import com.example.demo.model.PatientDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +16,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PatientRepository {
     private final List<Patient> patients;
-
 
     public List<Patient> getPatients() {
         return new ArrayList<>(patients);

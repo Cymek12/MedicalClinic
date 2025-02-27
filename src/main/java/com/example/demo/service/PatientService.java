@@ -3,10 +3,12 @@ package com.example.demo.service;
 import com.example.demo.exceptions.PatientNotFoundException;
 import com.example.demo.model.PasswordRequest;
 import com.example.demo.model.Patient;
+import com.example.demo.model.PatientDTO;
 import com.example.demo.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -14,13 +16,15 @@ import java.util.List;
 public class PatientService {
     private final PatientRepository patientRepository;
 
-    public List<Patient> getPatients() {
-        return patientRepository.getPatients();
+    public List<PatientDTO> getPatients() {
+        return patientRepository.getPatients().stream()
+                .map(this::createPatientDTO)
+                .toList();
     }
 
-    public Patient getPatientByEmail(String email) {
-        return patientRepository.getPatientByEmail(email)
-                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+    public PatientDTO getPatientByEmail(String email) {
+        return createPatientDTO(patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist")));
     }
 
     public void addPatient(Patient patient) {
@@ -28,17 +32,31 @@ public class PatientService {
     }
 
     public void deletePatientByEmail(String email) {
-        Patient patient = getPatientByEmail(email);
+        Patient patient = patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         patientRepository.deletePatient(patient);
     }
 
     public void editPatient(String email, Patient newPatientData) {
-        Patient patient = getPatientByEmail(email);
+        Patient patient = patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         patientRepository.editPatient(patient, newPatientData);
     }
 
     public void editPassword(String email, PasswordRequest newPassword) {
-        Patient patient = getPatientByEmail(email);
+        Patient patient = patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         patientRepository.editPassword(patient, newPassword.newPassword());
+    }
+
+    private PatientDTO createPatientDTO(Patient patient) {
+        return new PatientDTO(
+                patient.getEmail(),
+                patient.getIdCardNo(),
+                patient.getFirstName(),
+                patient.getLastName(),
+                patient.getPhoneNumber(),
+                patient.getBirthday()
+        );
     }
 }
