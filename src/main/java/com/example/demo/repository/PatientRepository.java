@@ -45,7 +45,7 @@ public class PatientRepository {
         if (isPatientDataNull(newPatientData)) {
             throw new PatientDataIsNullException("Patient fields cannot be null");
         }
-        if(isEmailExist(newPatientData.getEmail())){
+        if(isEmailExist(newPatientData.getEmail()) && !patient.getEmail().equals(newPatientData.getEmail())){
             throw new PatientAlreadyExistException("Email: " + newPatientData.getEmail() + " is reserved");
         }
         patient.setEmail(newPatientData.getEmail());
