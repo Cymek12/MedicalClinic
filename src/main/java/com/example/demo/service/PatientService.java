@@ -4,26 +4,26 @@ import com.example.demo.exceptions.PatientNotFoundException;
 import com.example.demo.model.PasswordRequest;
 import com.example.demo.model.Patient;
 import com.example.demo.model.PatientDTO;
+import com.example.demo.model.PatientMapper;
 import com.example.demo.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PatientService {
     private final PatientRepository patientRepository;
+    private final PatientMapper patientMapper;
 
     public List<PatientDTO> getPatients() {
-        return patientRepository.getPatients().stream()
-                .map(this::createPatientDTO)
-                .toList();
+        //PatientMapper patientMapper; dlaczego jak tutaj sobie definiuje mappera to nie działa?
+        return patientMapper.map(patientRepository.getPatients());
     }
 
     public PatientDTO getPatientByEmail(String email) {
-        return createPatientDTO(patientRepository.getPatientByEmail(email)
+        return patientMapper.map(patientRepository.getPatientByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist")));
     }
 
@@ -47,16 +47,5 @@ public class PatientService {
         Patient patient = patientRepository.getPatientByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         patientRepository.editPassword(patient, newPassword.newPassword());
-    }
-
-    private PatientDTO createPatientDTO(Patient patient) {
-        return new PatientDTO(
-                patient.getEmail(),
-                patient.getIdCardNo(),
-                patient.getFirstName(),
-                patient.getLastName(),
-                patient.getPhoneNumber(),
-                patient.getBirthday()
-        );
     }
 }
