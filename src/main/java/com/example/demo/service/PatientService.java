@@ -18,7 +18,6 @@ public class PatientService {
     private final PatientMapper patientMapper;
 
     public List<PatientDTO> getPatients() {
-        //PatientMapper patientMapper; dlaczego jak tutaj sobie definiuje mappera to nie działa?
         return patientMapper.map(patientRepository.getPatients());
     }
 
