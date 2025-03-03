@@ -1,7 +1,10 @@
 package com.example.demo.repository;
 
+import com.example.demo.exceptions.CannotChangeIdCardNoException;
 import com.example.demo.exceptions.PatientAlreadyExistException;
+import com.example.demo.exceptions.PatientDataIsNullException;
 import com.example.demo.model.Patient;
+import com.example.demo.model.PatientDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +16,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PatientRepository {
     private final List<Patient> patients;
-
 
     public List<Patient> getPatients() {
         return new ArrayList<>(patients);
@@ -37,12 +39,41 @@ public class PatientRepository {
     }
 
     public void editPatient(Patient patient, Patient newPatientData) {
+        if (!patient.getIdCardNo().equals(newPatientData.getIdCardNo())) {
+            throw new CannotChangeIdCardNoException("Id card number is unchangeable");
+        }
+        if (isPatientDataNull(newPatientData)) {
+            throw new PatientDataIsNullException("Patient fields cannot be null");
+        }
+        if(isEmailExist(newPatientData.getEmail()) && !patient.getEmail().equals(newPatientData.getEmail())){
+            throw new PatientAlreadyExistException("Email: " + newPatientData.getEmail() + " is reserved");
+        }
         patient.setEmail(newPatientData.getEmail());
         patient.setPassword(newPatientData.getPassword());
-        patient.setIdCardNo(newPatientData.getIdCardNo());
         patient.setFirstName(newPatientData.getFirstName());
         patient.setLastName(newPatientData.getLastName());
         patient.setPhoneNumber(newPatientData.getPhoneNumber());
         patient.setBirthday(newPatientData.getBirthday());
+    }
+
+    public boolean isPatientDataNull(Patient patient) {
+        return patient.getEmail() == null ||
+                patient.getPassword() == null ||
+                patient.getIdCardNo() == null ||
+                patient.getFirstName() == null ||
+                patient.getLastName() == null ||
+                patient.getPhoneNumber() == null ||
+                patient.getBirthday() == null;
+    }
+
+    public void editPassword(Patient patient, String newPassword) {
+        patient.setPassword(newPassword);
+    }
+
+    public boolean isEmailExist(String email) {
+        Optional<Patient> optPatient = patients.stream()
+                .filter(patient -> patient.getEmail().equals(email))
+                .findAny();
+        return optPatient.isPresent();
     }
 }

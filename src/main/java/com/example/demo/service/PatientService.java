@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.exceptions.PatientNotFoundException;
+import com.example.demo.model.PasswordRequest;
 import com.example.demo.model.Patient;
+import com.example.demo.model.PatientDTO;
+import com.example.demo.model.PatientMapper;
 import com.example.demo.repository.PatientRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +15,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PatientService {
     private final PatientRepository patientRepository;
+    private final PatientMapper patientMapper;
 
-    public List<Patient> getPatients() {
-        return patientRepository.getPatients();
+    public List<PatientDTO> getPatients() {
+        return patientMapper.map(patientRepository.getPatients());
     }
 
-    public Patient getPatientByEmail(String email) {
-        return patientRepository.getPatientByEmail(email)
-                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+    public PatientDTO getPatientByEmail(String email) {
+        return patientMapper.map(patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist")));
     }
 
     public void addPatient(Patient patient) {
@@ -37,5 +40,11 @@ public class PatientService {
         Patient patient = patientRepository.getPatientByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         patientRepository.editPatient(patient, newPatientData);
+    }
+
+    public void editPassword(String email, PasswordRequest newPassword) {
+        Patient patient = patientRepository.getPatientByEmail(email)
+                .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+        patientRepository.editPassword(patient, newPassword.newPassword());
     }
 }
