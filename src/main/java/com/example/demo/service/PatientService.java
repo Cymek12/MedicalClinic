@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +30,12 @@ public class PatientService {
     }
 
     public void addPatient(Patient patient) {
+        if(isPatientDataNull(patient)){
+            throw new PatientDataIsNullException("Patient fields cannot be null");
+        }
+        if(patientRepository.existsByEmail(patient.getEmail())){
+            throw new PatientAlreadyExistException("Patient with email: " + patient.getEmail() + " already exist");
+        }
         patientRepository.save(patient);
     }
 
@@ -52,6 +57,19 @@ public class PatientService {
         Patient patient = patientRepository.findByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         patient.setPassword(passwordRequest.newPassword());
+        patientRepository.save(patient);
+    }
+
+    private void validateNewPatientData(Patient patient, Patient newPatientData) {
+        if (!patient.getIdCardNo().equals(newPatientData.getIdCardNo())) {
+            throw new CannotChangeIdCardNoException("Id card number is unchangeable");
+        }
+        if(isPatientDataNull(newPatientData)){
+            throw new PatientDataIsNullException("Patient fields cannot be null");
+        }
+        if(patientRepository.existsByEmail(patient.getEmail()) && !patient.getEmail().equals(newPatientData.getEmail())){
+            throw new PatientAlreadyExistException("Patient with email: " + newPatientData.getEmail() + " already exist");
+        }
     }
 
     public void editNewPatient(Patient patient, Patient newPatientData) {
@@ -63,18 +81,6 @@ public class PatientService {
         patient.setBirthday(newPatientData.getBirthday());
     }
 
-    public void validateNewPatientData(Patient patient, Patient newPatientData) {
-        if (!patient.getIdCardNo().equals(newPatientData.getIdCardNo())) {
-            throw new CannotChangeIdCardNoException("Id card number is unchangeable");
-        }
-        if (isPatientDataNull(newPatientData)) {
-            throw new PatientDataIsNullException("Patient fields cannot be null");
-        }
-        if (isEmailExist(newPatientData.getEmail()) && !patient.getEmail().equals(newPatientData.getEmail())) {
-            throw new PatientAlreadyExistException("Email: " + newPatientData.getEmail() + " is reserved");
-        }
-    }
-
     public boolean isPatientDataNull(Patient patient) {
         return patient.getEmail() == null ||
                 patient.getPassword() == null ||
@@ -83,12 +89,5 @@ public class PatientService {
                 patient.getLastName() == null ||
                 patient.getPhoneNumber() == null ||
                 patient.getBirthday() == null;
-    }
-
-    public boolean isEmailExist(String email) {
-        Optional<Patient> optPatient = patientRepository.findAll().stream()
-                .filter(patient -> patient.getEmail().equals(email))
-                .findAny();
-        return optPatient.isPresent();
     }
 }
