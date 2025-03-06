@@ -1,26 +1,17 @@
 package com.example.demo.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
-@Entity
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
-@Data
-@Table(name = "DOCTORS")
-public class Doctor {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class DoctorDTO {
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
     private String specialization;
-    @ManyToMany
     private List<Institution> institutions;
 }
