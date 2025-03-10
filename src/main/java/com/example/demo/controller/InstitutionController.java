@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/institution")
+@RequestMapping("/institutions")
 @RequiredArgsConstructor
 public class InstitutionController {
     private final InstitutionService institutionService;

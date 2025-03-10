@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/doctor")
+@RequestMapping("/doctors")
 @RequiredArgsConstructor
 public class DoctorController {
     private final DoctorService doctorService;
@@ -41,8 +41,8 @@ public class DoctorController {
         doctorService.deleteDoctorByEmail(email);
     }
 
-    @PatchMapping("/addInstitution/{email}/{id}")
-    public void addInstitution(@PathVariable("email") String email, @PathVariable("id") String id){
+    @PatchMapping("/add-institution/{doctorEmail}/{institutionId}")
+    public void addInstitution(@PathVariable("doctorEmail") String email, @PathVariable("institutionId") String id){
         doctorService.addInstitution(email, id);
     }
 }

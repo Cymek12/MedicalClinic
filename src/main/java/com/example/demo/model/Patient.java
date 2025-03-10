@@ -25,4 +25,23 @@ public class Patient {
     private String lastName;
     private String phoneNumber;
     private LocalDate birthday;
+
+    public void editPatientData(Patient newPatientData) {
+        this.setEmail(newPatientData.getEmail());
+        this.setPassword(newPatientData.getPassword());
+        this.setFirstName(newPatientData.getFirstName());
+        this.setLastName(newPatientData.getLastName());
+        this.setPhoneNumber(newPatientData.getPhoneNumber());
+        this.setBirthday(newPatientData.getBirthday());
+    }
+
+    public boolean isPatientDataNull() {
+        return this.getEmail() == null ||
+                this.getPassword() == null ||
+                this.getIdCardNo() == null ||
+                this.getFirstName() == null ||
+                this.getLastName() == null ||
+                this.getPhoneNumber() == null ||
+                this.getBirthday() == null;
+    }
 }

@@ -37,7 +37,7 @@ public class DoctorService {
     }
 
     private void validateAddingDoctor(Doctor doctor) {
-        if (isDoctorDataNull(doctor)) {
+        if (doctor.isDoctorDataNull()) {
             throw new DoctorDataIsNullException("Doctor fields cannot be null");
         }
         if (doctorRepository.existsByEmail(doctor.getEmail())) {
@@ -55,12 +55,12 @@ public class DoctorService {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists"));
         validateNewDoctorData(doctor, newDoctorData);
-        editDoctorData(doctor, newDoctorData);
+        doctor.updateDoctor(newDoctorData);
         doctorRepository.save(doctor);
     }
 
     private void validateNewDoctorData(Doctor doctor, Doctor newDoctorData) {
-        if (isDoctorDataNull(doctor)) {
+        if (doctor.isDoctorDataNull()) {
             throw new DoctorDataIsNullException("Doctor fields cannot be null");
         }
         if (doctorRepository.existsByEmail(doctor.getEmail()) && !doctor.getEmail().equals(newDoctorData.getEmail())) {
@@ -68,30 +68,12 @@ public class DoctorService {
         }
     }
 
-    private void editDoctorData(Doctor doctor, Doctor newDoctorData) {
-        doctor.setEmail(newDoctorData.getEmail());
-        doctor.setPassword(newDoctorData.getPassword());
-        doctor.setFirstName(newDoctorData.getFirstName());
-        doctor.setLastName(newDoctorData.getLastName());
-        doctor.setSpecialization(newDoctorData.getSpecialization());
-    }
-
-    private boolean isDoctorDataNull(Doctor doctor) {
-        return doctor.getEmail() == null ||
-                doctor.getPassword() == null ||
-                doctor.getFirstName() == null ||
-                doctor.getLastName() == null ||
-                doctor.getSpecialization() == null;
-    }
-
-    public void addInstitution(String email, String id){
+    public void addInstitution(String email, String id) {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists"));
         Institution institution = institutionRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new InstitutionNotFoundException("Instituion with id: " + id + " do not exists"));
         doctor.getInstitutions().add(institution);
         doctorRepository.save(doctor);
-
     }
-
 }

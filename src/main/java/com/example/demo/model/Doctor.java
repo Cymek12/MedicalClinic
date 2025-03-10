@@ -23,4 +23,20 @@ public class Doctor {
     private String specialization;
     @ManyToMany
     private List<Institution> institutions;
+
+    public void updateDoctor(Doctor newDoctorData){
+        this.setEmail(newDoctorData.getEmail());
+        this.setPassword(newDoctorData.getPassword());
+        this.setFirstName(newDoctorData.getFirstName());
+        this.setLastName(newDoctorData.getLastName());
+        this.setSpecialization(newDoctorData.getSpecialization());
+    }
+
+    public boolean isDoctorDataNull() {
+        return this.getEmail() == null ||
+                this.getPassword() == null ||
+                this.getFirstName() == null ||
+                this.getLastName() == null ||
+                this.getSpecialization() == null;
+    }
 }

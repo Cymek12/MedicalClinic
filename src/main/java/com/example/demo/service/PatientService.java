@@ -30,7 +30,7 @@ public class PatientService {
     }
 
     private void validateAddingPatient(Patient patient) {
-        if (isPatientDataNull(patient)) {
+        if (patient.isPatientDataNull()) {
             throw new PatientDataIsNullException("Patient fields cannot be null");
         }
         if (patientRepository.existsByEmail(patient.getEmail())) {
@@ -48,7 +48,7 @@ public class PatientService {
         Patient patient = patientRepository.findByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         validateNewPatientData(patient, newPatientData);
-        editPatientData(patient, newPatientData);
+        patient.editPatientData(newPatientData);
         patientRepository.save(patient);
     }
 
@@ -63,30 +63,11 @@ public class PatientService {
         if (!patient.getIdCardNo().equals(newPatientData.getIdCardNo())) {
             throw new CannotChangeIdCardNoException("Id card number is unchangeable");
         }
-        if (isPatientDataNull(newPatientData)) {
+        if (newPatientData.isPatientDataNull()) {
             throw new PatientDataIsNullException("Patient fields cannot be null");
         }
         if (patientRepository.existsByEmail(patient.getEmail()) && !patient.getEmail().equals(newPatientData.getEmail())) {
             throw new PatientAlreadyExistException("Patient with email: " + newPatientData.getEmail() + " already exist");
         }
-    }
-
-    private void editPatientData(Patient patient, Patient newPatientData) {
-        patient.setEmail(newPatientData.getEmail());
-        patient.setPassword(newPatientData.getPassword());
-        patient.setFirstName(newPatientData.getFirstName());
-        patient.setLastName(newPatientData.getLastName());
-        patient.setPhoneNumber(newPatientData.getPhoneNumber());
-        patient.setBirthday(newPatientData.getBirthday());
-    }
-
-    private boolean isPatientDataNull(Patient patient) {
-        return patient.getEmail() == null ||
-                patient.getPassword() == null ||
-                patient.getIdCardNo() == null ||
-                patient.getFirstName() == null ||
-                patient.getLastName() == null ||
-                patient.getPhoneNumber() == null ||
-                patient.getBirthday() == null;
     }
 }

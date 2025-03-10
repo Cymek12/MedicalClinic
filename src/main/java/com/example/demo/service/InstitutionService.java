@@ -31,7 +31,7 @@ public class InstitutionService {
     }
 
     private void validateAddingInstitution(Institution institution) {
-        if (isInstitutionDataNull(institution)) {
+        if (institution.isInstitutionDataNull()) {
             throw new InstitutionDataIsNullException("Institution fields cannot be null");
         }
         if (institutionRepository.existsByName(institution.getName())) {
@@ -49,32 +49,16 @@ public class InstitutionService {
         Institution institution = institutionRepository.findByName(name)
                 .orElseThrow(() -> new InstitutionNotFoundException("Institution with name: " + name + " do not exists"));
         validateNewInstitutionData(institution, newInstitutionData);
-        editInstitutionData(institution, newInstitutionData);
+        institution.editInstitutionData(newInstitutionData);
         institutionRepository.save(institution);
     }
 
     private void validateNewInstitutionData(Institution institution, Institution newInstitutionData) {
-        if (isInstitutionDataNull(institution)) {
+        if (newInstitutionData.isInstitutionDataNull()) {
             throw new InstitutionDataIsNullException("Institution fields cannot be null");
         }
         if (institutionRepository.existsByName(institution.getName()) && !institution.getName().equals(newInstitutionData.getName())) {
             throw new InstitutionNotFoundException("Institution with name: " + newInstitutionData.getName() + " do not exists");
         }
-    }
-
-    private void editInstitutionData(Institution institution, Institution newInstitutionData) {
-        institution.setName(newInstitutionData.getName());
-        institution.setCity(newInstitutionData.getCity());
-        institution.setZipCode(newInstitutionData.getZipCode());
-        institution.setStreet(newInstitutionData.getStreet());
-        institution.setBuildingNumber(newInstitutionData.getBuildingNumber());
-    }
-
-    private boolean isInstitutionDataNull(Institution institution) {
-        return institution.getName() == null ||
-                institution.getCity() == null ||
-                institution.getZipCode() == null ||
-                institution.getStreet() == null ||
-                institution.getBuildingNumber() == null;
     }
 }
