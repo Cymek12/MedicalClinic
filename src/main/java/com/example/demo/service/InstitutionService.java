@@ -66,14 +66,7 @@ public class InstitutionService {
             for (DoctorRequest doctorRequest : doctorRequests) {
                 Doctor doctor = doctorRepository.findByEmail(doctorRequest.email())
                         .orElseGet(() -> {
-                            Doctor createdDoctor = Doctor.builder()
-                                    .firstName(doctorRequest.firstName())
-                                    .lastName(doctorRequest.lastName())
-                                    .email(doctorRequest.email())
-                                    .password(doctorRequest.password())
-                                    .specialization(doctorRequest.specialization())
-                                    .institutions(new HashSet<>())
-                                    .build();
+                            Doctor createdDoctor = buildDoctor(doctorRequest);
                             doctorService.validateAddingDoctor(createdDoctor);
                             return createdDoctor;
                         });
@@ -84,20 +77,35 @@ public class InstitutionService {
         institution.getDoctors().addAll(doctors);
     }
 
+    private Doctor buildDoctor(DoctorRequest doctorRequest) {
+        return Doctor.builder()
+                .firstName(doctorRequest.firstName())
+                .lastName(doctorRequest.lastName())
+                .email(doctorRequest.email())
+                .password(doctorRequest.password())
+                .specialization(doctorRequest.specialization())
+                .institutions(new HashSet<>())
+                .build();
+    }
+
     private Institution prepareInstitution(FullInstitutionDTO fullInstitutionDTORequest) {
         return institutionRepository.findByName(fullInstitutionDTORequest.getName())
                 .orElseGet(() -> {
-                    Institution institution = Institution.builder()
-                            .name(fullInstitutionDTORequest.getName())
-                            .city(fullInstitutionDTORequest.getCity())
-                            .zipCode(fullInstitutionDTORequest.getZipCode())
-                            .street(fullInstitutionDTORequest.getStreet())
-                            .buildingNumber(fullInstitutionDTORequest.getBuildingNumber())
-                            .doctors(new HashSet<>())
-                            .build();
+                    Institution institution = buildInstitution(fullInstitutionDTORequest);
                     validateAddingInstitution(institution);
                     return institution;
                 });
+    }
+
+    private Institution buildInstitution(FullInstitutionDTO fullInstitutionDTORequest) {
+        return Institution.builder()
+                .name(fullInstitutionDTORequest.getName())
+                .city(fullInstitutionDTORequest.getCity())
+                .zipCode(fullInstitutionDTORequest.getZipCode())
+                .street(fullInstitutionDTORequest.getStreet())
+                .buildingNumber(fullInstitutionDTORequest.getBuildingNumber())
+                .doctors(new HashSet<>())
+                .build();
     }
 
     private void validateAddingInstitution(Institution institution) {
