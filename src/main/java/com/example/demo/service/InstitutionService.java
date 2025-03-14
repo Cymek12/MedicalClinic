@@ -63,15 +63,15 @@ public class InstitutionService {
     private void assignDoctorToInstitution(Institution institution, Set<DoctorRequest> doctorRequests) {
         Set<Doctor> doctors = new HashSet<>();
         if (!doctorRequests.isEmpty()) {
-            for (DoctorRequest doctorRequest : doctorRequests) {
-                Doctor doctor = doctorRepository.findByEmail(doctorRequest.email())
-                        .orElseGet(() -> {
-                            Doctor createdDoctor = buildDoctor(doctorRequest);
-                            doctorService.validateAddingDoctor(createdDoctor);
-                            return createdDoctor;
-                        });
-                doctors.add(doctor);
-            }
+            doctorRequests.stream()
+                    .map(doctorRequest -> doctorRepository.findByEmail(doctorRequest.email())
+                            .orElseGet(() -> {
+                                Doctor createdDoctor = buildDoctor(doctorRequest);
+                                doctorService.validateAddingDoctor(createdDoctor);
+                                return createdDoctor;
+                            }))
+                    .map(doctors::add);
+
         }
         doctors.forEach(doctor -> doctor.getInstitutions().add(institution));
         institution.getDoctors().addAll(doctors);
