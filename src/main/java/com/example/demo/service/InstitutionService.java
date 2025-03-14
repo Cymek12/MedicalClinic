@@ -49,12 +49,6 @@ public class InstitutionService {
         institutionRepository.save(institution);
     }
 
-    public void addInstitutionWithDoctors(FullInstitutionDTO fullInstitutionDTO) {
-        Institution institution = prepareInstitution(fullInstitutionDTO);
-        assignDoctorToInstitution(institution, fullInstitutionDTO.getDoctors());
-        institutionRepository.save(institution);
-    }
-
     public void addInstitutionsWithDoctors(List<FullInstitutionDTO> fullInstitutionDTOS) {
         Set<Institution> institutions = fullInstitutionDTOS.stream()
                 .map(fullInstitutionDTO -> {
