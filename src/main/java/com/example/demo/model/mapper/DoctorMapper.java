@@ -1,5 +1,7 @@
-package com.example.demo.model;
+package com.example.demo.model.mapper;
 
+import com.example.demo.model.dto.DoctorDTO;
+import com.example.demo.model.entity.Doctor;
 import org.mapstruct.Mapper;
 
 import java.util.List;

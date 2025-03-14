@@ -4,13 +4,16 @@ import com.example.demo.exceptions.DoctorAlreadyExistException;
 import com.example.demo.exceptions.DoctorDataIsNullException;
 import com.example.demo.exceptions.DoctorNotFoundException;
 import com.example.demo.exceptions.InstitutionNotFoundException;
-import com.example.demo.model.Doctor;
-import com.example.demo.model.DoctorDTO;
-import com.example.demo.model.DoctorMapper;
-import com.example.demo.model.Institution;
+import com.example.demo.model.dto.PageContentDTO;
+import com.example.demo.model.entity.Doctor;
+import com.example.demo.model.dto.DoctorDTO;
+import com.example.demo.model.mapper.DoctorMapper;
+import com.example.demo.model.entity.Institution;
 import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.InstitutionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +25,15 @@ public class DoctorService {
     private final DoctorMapper doctorMapper;
     private final InstitutionRepository institutionRepository;
 
-    public List<DoctorDTO> getDoctors() {
-        return doctorMapper.map(doctorRepository.findAll());
+    public PageContentDTO<DoctorDTO> getDoctors(Pageable pageable) {
+        Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
+        List<DoctorDTO> doctorDTOS = doctorMapper.map(doctorPage.getContent());
+        return new PageContentDTO<>(
+                doctorPage.getTotalElements(),
+                doctorPage.getNumber(),
+                doctorPage.getTotalPages(),
+                doctorDTOS
+        );
     }
 
     public DoctorDTO getDoctorByEmail(String email) {
@@ -36,7 +46,7 @@ public class DoctorService {
         doctorRepository.save(doctor);
     }
 
-    private void validateAddingDoctor(Doctor doctor) {
+    public void validateAddingDoctor(Doctor doctor) {
         if (doctor.isDoctorDataNull()) {
             throw new DoctorDataIsNullException("Doctor fields cannot be null");
         }

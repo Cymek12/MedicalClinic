@@ -1,14 +1,14 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.PasswordRequest;
-import com.example.demo.model.Patient;
-import com.example.demo.model.PatientDTO;
+import com.example.demo.model.dto.PageContentDTO;
+import com.example.demo.model.entity.Patient;
+import com.example.demo.model.dto.PatientDTO;
 import com.example.demo.service.PatientService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/patients")
@@ -17,8 +17,8 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping
-    public List<PatientDTO> getPatients() {
-        return patientService.getPatients();
+    public PageContentDTO<PatientDTO> getPatients(Pageable pageable) {
+        return patientService.getPatients(pageable);
     }
 
     @GetMapping("/{email}")

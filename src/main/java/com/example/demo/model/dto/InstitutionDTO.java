@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.model.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -15,5 +15,5 @@ public class InstitutionDTO {
     private String zipCode;
     private String street;
     private String buildingNumber;
-    private List<Doctor> doctors;
+    private List<Long> doctorIds;
 }

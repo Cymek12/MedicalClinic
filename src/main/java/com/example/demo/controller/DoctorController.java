@@ -1,13 +1,13 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Doctor;
-import com.example.demo.model.DoctorDTO;
+import com.example.demo.model.dto.PageContentDTO;
+import com.example.demo.model.entity.Doctor;
+import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.service.DoctorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/doctors")
@@ -22,8 +22,8 @@ public class DoctorController {
     }
 
     @GetMapping
-    public List<DoctorDTO> getDoctors() {
-        return doctorService.getDoctors();
+    public PageContentDTO<DoctorDTO> getDoctors(Pageable pageable) {
+        return doctorService.getDoctors(pageable);
     }
 
     @GetMapping("/{email}")
@@ -42,7 +42,7 @@ public class DoctorController {
     }
 
     @PatchMapping("/add-institution/{doctorEmail}/{institutionId}")
-    public void addInstitution(@PathVariable("doctorEmail") String email, @PathVariable("institutionId") String id){
+    public void addInstitution(@PathVariable("doctorEmail") String email, @PathVariable("institutionId") String id) {
         doctorService.addInstitution(email, id);
     }
 }

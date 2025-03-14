@@ -1,10 +1,15 @@
 package com.example.demo.service;
 
 import com.example.demo.exceptions.*;
-import com.example.demo.model.PatientMapper;
+import com.example.demo.model.dto.PageContentDTO;
+import com.example.demo.model.mapper.PatientMapper;
 import com.example.demo.model.*;
+import com.example.demo.model.entity.Patient;
+import com.example.demo.model.dto.PatientDTO;
 import com.example.demo.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +22,17 @@ public class PatientService {
 
     public List<PatientDTO> getPatients() {
         return patientMapper.map(patientRepository.findAll());
+    }
+
+    public PageContentDTO<PatientDTO> getPatients(Pageable pageable) {
+        Page<Patient> patientPage = patientRepository.findAll(pageable);
+        List<PatientDTO> patientDTOS = patientMapper.map(patientPage.getContent());
+        return new PageContentDTO<>(
+                patientPage.getTotalElements(),
+                patientPage.getNumber(),
+                patientPage.getTotalPages(),
+                patientDTOS
+        );
     }
 
     public PatientDTO getPatientByEmail(String email) {

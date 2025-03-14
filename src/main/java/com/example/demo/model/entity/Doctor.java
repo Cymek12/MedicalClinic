@@ -1,10 +1,10 @@
-package com.example.demo.model;
+package com.example.demo.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -12,6 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Table(name = "DOCTORS")
+@Builder
 public class Doctor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +23,9 @@ public class Doctor {
     private String password;
     private String specialization;
     @ManyToMany
-    private List<Institution> institutions;
+    private Set<Institution> institutions = new HashSet<>();
 
-    public void updateDoctor(Doctor newDoctorData){
+    public void updateDoctor(Doctor newDoctorData) {
         this.setEmail(newDoctorData.getEmail());
         this.setPassword(newDoctorData.getPassword());
         this.setFirstName(newDoctorData.getFirstName());
@@ -43,12 +44,14 @@ public class Doctor {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Doctor doctor)) return false;
-        return Objects.equals(id, doctor.id);
+        if (!(o instanceof Doctor))
+            return false;
+        Doctor other = (Doctor) o;
+        return id != null && id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }

@@ -1,17 +1,18 @@
-package com.example.demo.model;
+package com.example.demo.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Institution {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +22,8 @@ public class Institution {
     private String zipCode;
     private String street;
     private String buildingNumber;
-    @ManyToMany(mappedBy = "institutions")
-    private List<Doctor> doctors;
+    @ManyToMany(mappedBy = "institutions", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Doctor> doctors;
 
 
     public void editInstitutionData(Institution newInstitutionData) {
@@ -44,12 +45,14 @@ public class Institution {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Institution that)) return false;
-        return Objects.equals(id, that.id);
+        if (!(o instanceof Institution))
+            return false;
+        Institution other = (Institution) o;
+        return id != null && id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }

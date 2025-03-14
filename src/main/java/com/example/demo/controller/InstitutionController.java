@@ -1,9 +1,12 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Institution;
-import com.example.demo.model.InstitutionDTO;
+import com.example.demo.model.dto.FullInstitutionDTO;
+import com.example.demo.model.dto.PageContentDTO;
+import com.example.demo.model.entity.Institution;
+import com.example.demo.model.dto.InstitutionDTO;
 import com.example.demo.service.InstitutionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +25,8 @@ public class InstitutionController {
     }
 
     @GetMapping
-    public List<InstitutionDTO> getInstitutions() {
-        return institutionService.getInstitutions();
+    public PageContentDTO<InstitutionDTO> getInstitutions(Pageable pageable) {
+        return institutionService.getInstitutions(pageable);
     }
 
     @GetMapping("/{name}")
@@ -39,5 +42,15 @@ public class InstitutionController {
     @DeleteMapping("/{name}")
     public void deleteInstitutionByName(@PathVariable("name") String name) {
         institutionService.deleteInstitutionByName(name);
+    }
+
+    @PostMapping("/add-institution-with-doctors")
+    public void addInstitutionWithDoctors(@RequestBody FullInstitutionDTO fullInstitutionDTO) {
+        institutionService.addInstitutionWithDoctors(fullInstitutionDTO);
+    }
+
+    @PostMapping("/add-institutions-with-doctors")
+    public void addInstitutionsWithDoctors(@RequestBody List<FullInstitutionDTO> fullInstitutionDTOs) {
+        institutionService.addInstitutionsWithDoctors(fullInstitutionDTOs);
     }
 }

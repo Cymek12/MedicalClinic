@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.demo.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Entity
 @AllArgsConstructor
@@ -49,12 +48,14 @@ public class Patient {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Patient patient)) return false;
-        return Objects.equals(id, patient.id);
+        if (!(o instanceof Patient))
+            return false;
+        Patient other = (Patient) o;
+        return id != null && id.equals(other.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return getClass().hashCode();
     }
 }
