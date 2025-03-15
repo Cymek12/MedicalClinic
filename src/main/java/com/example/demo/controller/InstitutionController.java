@@ -44,7 +44,7 @@ public class InstitutionController {
         institutionService.deleteInstitutionByName(name);
     }
 
-    @PostMapping("/bulk-insert")
+    @PostMapping("/bulk")
     public void addInstitutionsWithDoctors(@RequestBody List<FullInstitutionDTO> fullInstitutionDTOs) {
         institutionService.addInstitutionsWithDoctors(fullInstitutionDTOs);
     }
