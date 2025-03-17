@@ -4,16 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,13 +36,13 @@ public class Patient {
     }
 
     public boolean isPatientDataNull() {
-        return this.getEmail() == null ||
-                this.getPassword() == null ||
-                this.getIdCardNo() == null ||
-                this.getFirstName() == null ||
-                this.getLastName() == null ||
-                this.getPhoneNumber() == null ||
-                this.getBirthday() == null;
+        return Objects.isNull(this.getEmail()) ||
+                Objects.isNull(this.getPassword()) ||
+                Objects.isNull(this.getIdCardNo()) ||
+                Objects.isNull(this.getFirstName()) ||
+                Objects.isNull(this.getLastName()) ||
+                Objects.isNull(this.getPhoneNumber()) ||
+                Objects.isNull(this.getBirthday());
     }
 
     @Override

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -34,11 +35,11 @@ public class Doctor {
     }
 
     public boolean isDoctorDataNull() {
-        return this.getEmail() == null ||
-                this.getPassword() == null ||
-                this.getFirstName() == null ||
-                this.getLastName() == null ||
-                this.getSpecialization() == null;
+        return Objects.isNull(this.getFirstName()) ||
+                Objects.isNull(this.getLastName()) ||
+                Objects.isNull(this.getEmail()) ||
+                Objects.isNull(this.getPassword()) ||
+                Objects.isNull(this.getSpecialization());
     }
 
     @Override

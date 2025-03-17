@@ -41,7 +41,7 @@ public class DoctorController {
         doctorService.deleteDoctorByEmail(email);
     }
 
-    @PatchMapping("/add-institution/{doctorEmail}/{institutionId}")
+    @PatchMapping("/institution/{doctorEmail}/{institutionId}")
     public void addInstitution(@PathVariable("doctorEmail") String email, @PathVariable("institutionId") String id) {
         doctorService.addInstitution(email, id);
     }

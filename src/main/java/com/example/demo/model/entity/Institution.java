@@ -1,17 +1,16 @@
 package com.example.demo.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class Institution {
     @Id
@@ -25,7 +24,6 @@ public class Institution {
     @ManyToMany(mappedBy = "institutions", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Doctor> doctors;
 
-
     public void editInstitutionData(Institution newInstitutionData) {
         this.setName(newInstitutionData.getName());
         this.setCity(newInstitutionData.getCity());
@@ -35,11 +33,11 @@ public class Institution {
     }
 
     public boolean isInstitutionDataNull() {
-        return this.getName() == null ||
-                this.getCity() == null ||
-                this.getZipCode() == null ||
-                this.getStreet() == null ||
-                this.getBuildingNumber() == null;
+        return Objects.isNull(this.getName()) ||
+                Objects.isNull(this.getCity()) ||
+                Objects.isNull(this.getZipCode()) ||
+                Objects.isNull(this.getStreet()) ||
+                Objects.isNull(this.getBuildingNumber());
     }
 
     @Override
