@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,28 +49,27 @@ public class InstitutionService {
     }
 
     public void addInstitutionsWithDoctors(List<FullInstitutionDTO> fullInstitutionDTOS) {
-        Set<Institution> institutions = fullInstitutionDTOS.stream()
-                .map(fullInstitutionDTO -> {
-                    Institution institution = prepareInstitution(fullInstitutionDTO);
-                    assignDoctorToInstitution(institution, fullInstitutionDTO.getDoctors());
-                    return institution;
-                })
-                .collect(Collectors.toSet());
+        Set<Institution> institutions = new HashSet<>();
+        fullInstitutionDTOS.forEach(fullInstitutionDTO -> {
+            Institution institution = prepareInstitution(fullInstitutionDTO);
+            assignDoctorToInstitution(institution, fullInstitutionDTO.getDoctors());
+            institutions.add(institution);
+        });
         institutionRepository.saveAll(institutions);
     }
 
     private void assignDoctorToInstitution(Institution institution, Set<DoctorRequest> doctorRequests) {
         Set<Doctor> doctors = new HashSet<>();
         if (!doctorRequests.isEmpty()) {
-            doctorRequests.stream()
-                    .map(doctorRequest -> doctorRepository.findByEmail(doctorRequest.email())
-                            .orElseGet(() -> {
-                                Doctor createdDoctor = buildDoctor(doctorRequest);
-                                doctorService.validateAddingDoctor(createdDoctor);
-                                return createdDoctor;
-                            }))
-                    .map(doctors::add);
-
+            doctorRequests.forEach(doctorRequest -> {
+                Doctor doctor = doctorRepository.findByEmail(doctorRequest.email())
+                        .orElseGet(() -> {
+                            Doctor createdDoctor = buildDoctor(doctorRequest);
+                            doctorService.validateAddingDoctor(createdDoctor);
+                            return createdDoctor;
+                        });
+                doctors.add(doctor);
+            });
         }
         doctors.forEach(doctor -> doctor.getInstitutions().add(institution));
         institution.getDoctors().addAll(doctors);
