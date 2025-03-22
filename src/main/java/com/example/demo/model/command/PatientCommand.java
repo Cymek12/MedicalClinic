@@ -1,4 +1,4 @@
-package com.example.demo.model.dto;
+package com.example.demo.model.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @Builder
-public class PatientDTO {
-    private Long id;
+public class PatientCommand {
     private String email;
-    private final String idCardNo;
+    private String password;
+    private String idCardNo;
     private String firstName;
     private String lastName;
     private String phoneNumber;

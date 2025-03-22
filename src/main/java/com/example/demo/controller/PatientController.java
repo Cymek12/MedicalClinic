@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.PasswordRequest;
-import com.example.demo.model.dto.PageContentDTO;
-import com.example.demo.model.entity.Patient;
+import com.example.demo.model.command.PatientCommand;
+import com.example.demo.model.PageContent;
 import com.example.demo.model.dto.PatientDTO;
 import com.example.demo.service.PatientService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping
-    public PageContentDTO<PatientDTO> getPatients(Pageable pageable) {
+    public PageContent<PatientDTO> getPatients(Pageable pageable) {
         return patientService.getPatients(pageable);
     }
 
@@ -28,8 +28,8 @@ public class PatientController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addPatient(@RequestBody Patient patient) {
-        patientService.addPatient(patient);
+    public void addPatient(@RequestBody PatientCommand patientCommand) {
+        patientService.addPatient(patientCommand);
     }
 
     @DeleteMapping("/{email}")
@@ -38,8 +38,8 @@ public class PatientController {
     }
 
     @PutMapping("/{email}")
-    public void editPatient(@PathVariable("email") String email, @RequestBody Patient newPatientData) {
-        patientService.editPatient(email, newPatientData);
+    public PatientDTO editPatient(@PathVariable("email") String email, @RequestBody PatientCommand patientCommand) {
+        return patientService.editPatient(email, patientCommand);
     }
 
     @PatchMapping("/{email}")

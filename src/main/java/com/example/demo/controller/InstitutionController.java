@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.command.InstitutionCommand;
 import com.example.demo.model.dto.FullInstitutionDTO;
-import com.example.demo.model.dto.PageContentDTO;
-import com.example.demo.model.entity.Institution;
+import com.example.demo.model.PageContent;
 import com.example.demo.model.dto.InstitutionDTO;
 import com.example.demo.service.InstitutionService;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +20,12 @@ public class InstitutionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addInstitution(@RequestBody Institution institution) {
-        institutionService.addInstitution(institution);
+    public void addInstitution(@RequestBody InstitutionCommand institutionCommand) {
+        institutionService.addInstitution(institutionCommand);
     }
 
     @GetMapping
-    public PageContentDTO<InstitutionDTO> getInstitutions(Pageable pageable) {
+    public PageContent<InstitutionDTO> getInstitutions(Pageable pageable) {
         return institutionService.getInstitutions(pageable);
     }
 
@@ -35,8 +35,8 @@ public class InstitutionController {
     }
 
     @PutMapping("/{name}")
-    public void editInstitutionByName(@PathVariable("name") String name, @RequestBody Institution institution) {
-        institutionService.editInstitutionByName(name, institution);
+    public void editInstitutionByName(@PathVariable("name") String name, @RequestBody InstitutionCommand institutionCommand) {
+        institutionService.editInstitutionByName(name, institutionCommand);
     }
 
     @DeleteMapping("/{name}")

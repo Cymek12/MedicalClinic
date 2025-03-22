@@ -1,10 +1,15 @@
 package com.example.demo.service;
 
-import com.example.demo.exceptions.*;
+import com.example.demo.exceptions.institution.InstitutionAlreadyExistException;
+import com.example.demo.exceptions.institution.InstitutionDataIsNullException;
+import com.example.demo.exceptions.institution.InstitutionNotFoundException;
 import com.example.demo.model.DoctorRequest;
+import com.example.demo.model.command.DoctorCommand;
+import com.example.demo.model.command.InstitutionCommand;
+import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.model.dto.FullInstitutionDTO;
 import com.example.demo.model.dto.InstitutionDTO;
-import com.example.demo.model.dto.PageContentDTO;
+import com.example.demo.model.PageContent;
 import com.example.demo.model.entity.Doctor;
 import com.example.demo.model.entity.Institution;
 import com.example.demo.model.mapper.InstitutionMapper;
@@ -27,10 +32,10 @@ public class InstitutionService {
     private final DoctorRepository doctorRepository;
     private final DoctorService doctorService;
 
-    public PageContentDTO<InstitutionDTO> getInstitutions(Pageable pageable) {
+    public PageContent<InstitutionDTO> getInstitutions(Pageable pageable) {
         Page<Institution> institutionPage = institutionRepository.findAll(pageable);
-        List<InstitutionDTO> institutionDTOS = institutionMapper.map(institutionPage.getContent());
-        return new PageContentDTO<>(
+        List<InstitutionDTO> institutionDTOS = institutionMapper.toDTO(institutionPage.getContent());
+        return new PageContent<>(
                 institutionPage.getTotalElements(),
                 institutionPage.getNumber(),
                 institutionPage.getTotalPages(),
@@ -39,11 +44,12 @@ public class InstitutionService {
     }
 
     public InstitutionDTO getInstitutionByName(String name) {
-        return institutionMapper.map(institutionRepository.findByName(name)
+        return institutionMapper.toDTO(institutionRepository.findByName(name)
                 .orElseThrow(() -> new InstitutionNotFoundException("Institution with name: " + name + " do not exists")));
     }
 
-    public void addInstitution(Institution institution) {
+    public void addInstitution(InstitutionCommand institutionCommand) {
+        Institution institution = institutionMapper.toEntity(institutionCommand);
         validateAddingInstitution(institution);
         institutionRepository.save(institution);
     }
@@ -58,13 +64,13 @@ public class InstitutionService {
         institutionRepository.saveAll(institutions);
     }
 
-    private void assignDoctorToInstitution(Institution institution, Set<DoctorRequest> doctorRequests) {
+    private void assignDoctorToInstitution(Institution institution, Set<DoctorCommand> doctorCommandSet) {
         Set<Doctor> doctors = new HashSet<>();
-        if (!doctorRequests.isEmpty()) {
-            doctorRequests.forEach(doctorRequest -> {
-                Doctor doctor = doctorRepository.findByEmail(doctorRequest.email())
+        if (!doctorCommandSet.isEmpty()) {
+            doctorCommandSet.forEach(doctorCommand -> {
+                Doctor doctor = doctorRepository.findByEmail(doctorCommand.getEmail())
                         .orElseGet(() -> {
-                            Doctor createdDoctor = buildDoctor(doctorRequest);
+                            Doctor createdDoctor = buildDoctor(doctorCommand);
                             doctorService.validateAddingDoctor(createdDoctor);
                             return createdDoctor;
                         });
@@ -75,13 +81,13 @@ public class InstitutionService {
         institution.getDoctors().addAll(doctors);
     }
 
-    private Doctor buildDoctor(DoctorRequest doctorRequest) {
+    private Doctor buildDoctor(DoctorCommand doctorCommand) {
         return Doctor.builder()
-                .firstName(doctorRequest.firstName())
-                .lastName(doctorRequest.lastName())
-                .email(doctorRequest.email())
-                .password(doctorRequest.password())
-                .specialization(doctorRequest.specialization())
+                .firstName(doctorCommand.getFirstName())
+                .lastName(doctorCommand.getLastName())
+                .email(doctorCommand.getEmail())
+                .password(doctorCommand.getPassword())
+                .specialization(doctorCommand.getSpecialization())
                 .institutions(new HashSet<>())
                 .build();
     }
@@ -121,9 +127,10 @@ public class InstitutionService {
         institutionRepository.delete(institution);
     }
 
-    public void editInstitutionByName(String name, Institution newInstitutionData) {
+    public void editInstitutionByName(String name, InstitutionCommand institutionCommand) {
         Institution institution = institutionRepository.findByName(name)
                 .orElseThrow(() -> new InstitutionNotFoundException("Institution with name: " + name + " do not exists"));
+        Institution newInstitutionData = institutionMapper.toEntity(institutionCommand);
         validateNewInstitutionData(institution, newInstitutionData);
         institution.editInstitutionData(newInstitutionData);
         institutionRepository.save(institution);

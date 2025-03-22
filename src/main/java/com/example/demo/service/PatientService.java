@@ -1,7 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.exceptions.*;
-import com.example.demo.model.dto.PageContentDTO;
+import com.example.demo.exceptions.patient.CannotChangeIdCardNoException;
+import com.example.demo.exceptions.patient.PatientAlreadyExistException;
+import com.example.demo.exceptions.patient.PatientDataIsNullException;
+import com.example.demo.exceptions.patient.PatientNotFoundException;
+import com.example.demo.model.command.PatientCommand;
+import com.example.demo.model.PageContent;
 import com.example.demo.model.mapper.PatientMapper;
 import com.example.demo.model.*;
 import com.example.demo.model.entity.Patient;
@@ -20,14 +24,10 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final PatientMapper patientMapper;
 
-    public List<PatientDTO> getPatients() {
-        return patientMapper.map(patientRepository.findAll());
-    }
-
-    public PageContentDTO<PatientDTO> getPatients(Pageable pageable) {
+    public PageContent<PatientDTO> getPatients(Pageable pageable) {
         Page<Patient> patientPage = patientRepository.findAll(pageable);
-        List<PatientDTO> patientDTOS = patientMapper.map(patientPage.getContent());
-        return new PageContentDTO<>(
+        List<PatientDTO> patientDTOS = patientMapper.toDTO(patientPage.getContent());
+        return new PageContent<>(
                 patientPage.getTotalElements(),
                 patientPage.getNumber(),
                 patientPage.getTotalPages(),
@@ -36,13 +36,15 @@ public class PatientService {
     }
 
     public PatientDTO getPatientByEmail(String email) {
-        return patientMapper.map(patientRepository.findByEmail(email)
+        return patientMapper.toDTO(patientRepository.findByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist")));
     }
 
-    public void addPatient(Patient patient) {
+    public PatientDTO addPatient(PatientCommand patientCommand) {
+        Patient patient = patientMapper.toEntity(patientCommand);
         validateAddingPatient(patient);
-        patientRepository.save(patient);
+        Patient savedPatient = patientRepository.save(patient);
+        return patientMapper.toDTO(savedPatient);
     }
 
     private void validateAddingPatient(Patient patient) {
@@ -60,12 +62,14 @@ public class PatientService {
         patientRepository.delete(patient);
     }
 
-    public void editPatient(String email, Patient newPatientData) {
+    public PatientDTO editPatient(String email, PatientCommand patientCommand) {
         Patient patient = patientRepository.findByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
+        Patient newPatientData = patientMapper.toEntity(patientCommand);
         validateNewPatientData(patient, newPatientData);
         patient.editPatientData(newPatientData);
-        patientRepository.save(patient);
+        Patient savedPatient = patientRepository.save(patient);
+        return patientMapper.toDTO(savedPatient);
     }
 
     public void editPassword(String email, PasswordRequest passwordRequest) {

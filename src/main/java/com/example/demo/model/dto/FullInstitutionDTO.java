@@ -1,6 +1,7 @@
 package com.example.demo.model.dto;
 
 import com.example.demo.model.DoctorRequest;
+import com.example.demo.model.command.DoctorCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,5 +15,5 @@ public class FullInstitutionDTO {
     private String zipCode;
     private String street;
     private String buildingNumber;
-    private Set<DoctorRequest> doctors;
+    private Set<DoctorCommand> doctors;
 }

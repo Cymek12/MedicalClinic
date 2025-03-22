@@ -1,10 +1,11 @@
 package com.example.demo.service;
 
-import com.example.demo.exceptions.DoctorAlreadyExistException;
-import com.example.demo.exceptions.DoctorDataIsNullException;
-import com.example.demo.exceptions.DoctorNotFoundException;
-import com.example.demo.exceptions.InstitutionNotFoundException;
-import com.example.demo.model.dto.PageContentDTO;
+import com.example.demo.exceptions.doctor.DoctorAlreadyExistException;
+import com.example.demo.exceptions.doctor.DoctorDataIsNullException;
+import com.example.demo.exceptions.doctor.DoctorNotFoundException;
+import com.example.demo.exceptions.institution.InstitutionNotFoundException;
+import com.example.demo.model.command.DoctorCommand;
+import com.example.demo.model.PageContent;
 import com.example.demo.model.entity.Doctor;
 import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.model.mapper.DoctorMapper;
@@ -25,10 +26,10 @@ public class DoctorService {
     private final DoctorMapper doctorMapper;
     private final InstitutionRepository institutionRepository;
 
-    public PageContentDTO<DoctorDTO> getDoctors(Pageable pageable) {
+    public PageContent<DoctorDTO> getDoctors(Pageable pageable) {
         Page<Doctor> doctorPage = doctorRepository.findAll(pageable);
-        List<DoctorDTO> doctorDTOS = doctorMapper.map(doctorPage.getContent());
-        return new PageContentDTO<>(
+        List<DoctorDTO> doctorDTOS = doctorMapper.toDTO(doctorPage.getContent());
+        return new PageContent<>(
                 doctorPage.getTotalElements(),
                 doctorPage.getNumber(),
                 doctorPage.getTotalPages(),
@@ -37,11 +38,12 @@ public class DoctorService {
     }
 
     public DoctorDTO getDoctorByEmail(String email) {
-        return doctorMapper.map(doctorRepository.findByEmail(email)
+        return doctorMapper.toDTO(doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists")));
     }
 
-    public void addDoctor(Doctor doctor) {
+    public void addDoctor(DoctorCommand doctorCommand) {
+        Doctor doctor = doctorMapper.toEntity(doctorCommand);
         validateAddingDoctor(doctor);
         doctorRepository.save(doctor);
     }
@@ -61,9 +63,10 @@ public class DoctorService {
         doctorRepository.delete(doctor);
     }
 
-    public void editDoctorByEmail(String email, Doctor newDoctorData) {
+    public void editDoctorByEmail(String email, DoctorCommand doctorCommand) {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists"));
+        Doctor newDoctorData = doctorMapper.toEntity(doctorCommand);
         validateNewDoctorData(doctor, newDoctorData);
         doctor.updateDoctor(newDoctorData);
         doctorRepository.save(doctor);

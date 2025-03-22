@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,6 +26,8 @@ public class Doctor {
     private String specialization;
     @ManyToMany
     private Set<Institution> institutions = new HashSet<>();
+    @OneToMany(mappedBy = "doctor")
+    private List<Visit> visits;
 
     public void updateDoctor(Doctor newDoctorData) {
         this.setEmail(newDoctorData.getEmail());

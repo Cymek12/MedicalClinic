@@ -1,13 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.dto.PageContentDTO;
-import com.example.demo.model.entity.Doctor;
+import com.example.demo.model.command.DoctorCommand;
+import com.example.demo.model.PageContent;
 import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/doctors")
@@ -17,12 +18,12 @@ public class DoctorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addDoctor(@RequestBody Doctor doctor) {
-        doctorService.addDoctor(doctor);
+    public void addDoctor(@RequestBody DoctorCommand doctorCommand) {
+        doctorService.addDoctor(doctorCommand);
     }
 
     @GetMapping
-    public PageContentDTO<DoctorDTO> getDoctors(Pageable pageable) {
+    public PageContent<DoctorDTO> getDoctors(Pageable pageable) {
         return doctorService.getDoctors(pageable);
     }
 
@@ -32,8 +33,8 @@ public class DoctorController {
     }
 
     @PutMapping("/{email}")
-    public void editDoctorByEmail(@PathVariable("email") String email, @RequestBody Doctor doctor) {
-        doctorService.editDoctorByEmail(email, doctor);
+    public void editDoctorByEmail(@PathVariable("email") String email, @RequestBody DoctorCommand doctorCommand) {
+        doctorService.editDoctorByEmail(email, doctorCommand);
     }
 
     @DeleteMapping("/{email}")
