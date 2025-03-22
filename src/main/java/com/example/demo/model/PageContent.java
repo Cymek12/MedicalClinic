@@ -1,6 +1,15 @@
 package com.example.demo.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.List;
 
-public record PageContent<T>(Long totalElements, int currentPage, int totalPageNumber, List<T> content) {
+@Getter
+@AllArgsConstructor
+public class PageContent<T> {
+    private Long totalElements;
+    private int currentPage;
+    private int totalPageNumber;
+    private List<T> content;
 }

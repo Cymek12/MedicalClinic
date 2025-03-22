@@ -43,7 +43,7 @@ public class PatientController {
     }
 
     @PatchMapping("/{email}")
-    public void editPassword(@PathVariable("email") String email, @RequestBody PasswordRequest newPassword) {
-        patientService.editPassword(email, newPassword);
+    public PatientDTO editPassword(@PathVariable("email") String email, @RequestBody PasswordRequest newPassword) {
+        return patientService.editPassword(email, newPassword);
     }
 }

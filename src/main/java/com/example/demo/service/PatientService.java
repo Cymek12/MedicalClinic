@@ -72,11 +72,12 @@ public class PatientService {
         return patientMapper.toDTO(savedPatient);
     }
 
-    public void editPassword(String email, PasswordRequest passwordRequest) {
+    public PatientDTO editPassword(String email, PasswordRequest passwordRequest) {
         Patient patient = patientRepository.findByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         patient.setPassword(passwordRequest.newPassword());
-        patientRepository.save(patient);
+        Patient savedPatient = patientRepository.save(patient);
+        return patientMapper.toDTO(savedPatient);
     }
 
     private void validateNewPatientData(Patient patient, Patient newPatientData) {
