@@ -29,13 +29,14 @@ public class VisitService {
     private final VisitMapper visitMapper;
     private final PatientRepository patientRepository;
 
-    public void createVisit(String email, VisitCommand visitCommand) {
+    public VisitDTO createVisit(String email, VisitCommand visitCommand) {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists"));
         Visit visit = visitMapper.toEntity(visitCommand);
         validateVisit(visit, doctor);
         visit.setDoctor(doctor);
-        visitRepository.save(visit);
+        Visit savedVisit = visitRepository.save(visit);
+        return visitMapper.toDTO(savedVisit);
     }
 
     public PageContent<VisitDTO> getVisits(Pageable pageable) {

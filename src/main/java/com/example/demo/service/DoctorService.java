@@ -42,10 +42,11 @@ public class DoctorService {
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists")));
     }
 
-    public void addDoctor(DoctorCommand doctorCommand) {
+    public DoctorDTO addDoctor(DoctorCommand doctorCommand) {
         Doctor doctor = doctorMapper.toEntity(doctorCommand);
         validateAddingDoctor(doctor);
-        doctorRepository.save(doctor);
+        Doctor savedDoctor = doctorRepository.save(doctor);
+        return doctorMapper.toDTO(savedDoctor);
     }
 
     public void validateAddingDoctor(Doctor doctor) {
@@ -63,17 +64,18 @@ public class DoctorService {
         doctorRepository.delete(doctor);
     }
 
-    public void editDoctorByEmail(String email, DoctorCommand doctorCommand) {
+    public DoctorDTO editDoctorByEmail(String email, DoctorCommand doctorCommand) {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists"));
         Doctor newDoctorData = doctorMapper.toEntity(doctorCommand);
         validateNewDoctorData(doctor, newDoctorData);
         doctor.updateDoctor(newDoctorData);
-        doctorRepository.save(doctor);
+        Doctor savedDoctor = doctorRepository.save(doctor);
+        return doctorMapper.toDTO(savedDoctor);
     }
 
     private void validateNewDoctorData(Doctor doctor, Doctor newDoctorData) {
-        if (doctor.isDoctorDataNull()) {
+        if (newDoctorData.isDoctorDataNull()) {
             throw new DoctorDataIsNullException("Doctor fields cannot be null");
         }
         if (doctorRepository.existsByEmail(doctor.getEmail()) && !doctor.getEmail().equals(newDoctorData.getEmail())) {
@@ -81,12 +83,13 @@ public class DoctorService {
         }
     }
 
-    public void addInstitution(String email, String id) {
+    public DoctorDTO addInstitution(String email, String id) {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists"));
         Institution institution = institutionRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new InstitutionNotFoundException("Instituion with id: " + id + " do not exists"));
         doctor.getInstitutions().add(institution);
-        doctorRepository.save(doctor);
+        Doctor savedDoctor = doctorRepository.save(doctor);
+        return doctorMapper.toDTO(savedDoctor);
     }
 }

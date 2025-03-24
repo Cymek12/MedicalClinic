@@ -16,8 +16,8 @@ public class VisitController {
     private final VisitService visitService;
 
     @PostMapping("/{doctorEmail}")
-    public void createVisit(@RequestBody VisitCommand visitCommand, @PathVariable("doctorEmail") String email) {
-        visitService.createVisit(email, visitCommand);
+    public VisitDTO createVisit(@RequestBody VisitCommand visitCommand, @PathVariable("doctorEmail") String email) {
+        return visitService.createVisit(email, visitCommand);
     }
 
     @GetMapping("/available")

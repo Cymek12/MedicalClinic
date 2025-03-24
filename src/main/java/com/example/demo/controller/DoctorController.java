@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.Doc;
+
 
 @RestController
 @RequestMapping("/doctors")
@@ -18,8 +20,8 @@ public class DoctorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addDoctor(@RequestBody DoctorCommand doctorCommand) {
-        doctorService.addDoctor(doctorCommand);
+    public DoctorDTO addDoctor(@RequestBody DoctorCommand doctorCommand) {
+        return doctorService.addDoctor(doctorCommand);
     }
 
     @GetMapping
@@ -33,8 +35,8 @@ public class DoctorController {
     }
 
     @PutMapping("/{email}")
-    public void editDoctorByEmail(@PathVariable("email") String email, @RequestBody DoctorCommand doctorCommand) {
-        doctorService.editDoctorByEmail(email, doctorCommand);
+    public DoctorDTO editDoctorByEmail(@PathVariable("email") String email, @RequestBody DoctorCommand doctorCommand) {
+        return doctorService.editDoctorByEmail(email, doctorCommand);
     }
 
     @DeleteMapping("/{email}")
@@ -43,7 +45,7 @@ public class DoctorController {
     }
 
     @PatchMapping("/institution/{doctorEmail}/{institutionId}")
-    public void addInstitution(@PathVariable("doctorEmail") String email, @PathVariable("institutionId") String id) {
-        doctorService.addInstitution(email, id);
+    public DoctorDTO addInstitution(@PathVariable("doctorEmail") String email, @PathVariable("institutionId") String id) {
+        return doctorService.addInstitution(email, id);
     }
 }

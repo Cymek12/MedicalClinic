@@ -47,16 +47,7 @@ public class PatientServiceTest {
     void getPatients_patientsExists_ReturnPageContentDTO() {
         //given
         Pageable pageable = PageRequest.of(0, 5);
-        Patient currentPatient = Patient.builder()
-                .id(1L)
-                .email("test@gmail.com")
-                .password("pass")
-                .idCardNo("123")
-                .firstName("jan")
-                .lastName("kowalski")
-                .phoneNumber("123456789")
-                .birthday(LocalDate.of(2000, 2, 17))
-                .build();
+        Patient currentPatient = buildPatient();
         List<Patient> patients = new ArrayList<>();
         patients.add(currentPatient);
         Page<Patient> patientPage = new PageImpl<>(patients, pageable, patients.size());
