@@ -87,7 +87,7 @@ public class DoctorService {
         Doctor doctor = doctorRepository.findByEmail(email)
                 .orElseThrow(() -> new DoctorNotFoundException("Doctor with email: " + email + " do not exists"));
         Institution institution = institutionRepository.findById(Long.valueOf(id))
-                .orElseThrow(() -> new InstitutionNotFoundException("Instituion with id: " + id + " do not exists"));
+                .orElseThrow(() -> new InstitutionNotFoundException("Institution with id: " + id + " do not exists"));
         doctor.getInstitutions().add(institution);
         Doctor savedDoctor = doctorRepository.save(doctor);
         return doctorMapper.toDTO(savedDoctor);

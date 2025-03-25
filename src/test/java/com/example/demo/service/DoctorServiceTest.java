@@ -9,13 +9,13 @@ import com.example.demo.model.command.DoctorCommand;
 import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.model.entity.Doctor;
 import com.example.demo.model.entity.Institution;
-import com.example.demo.model.entity.Patient;
 import com.example.demo.model.mapper.DoctorMapper;
 import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.InstitutionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,7 +23,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
-import javax.print.Doc;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,22 +47,30 @@ public class DoctorServiceTest {
     void getDoctors_doctorsExists_returnPageContentDTO() {
         //given
         Pageable pageable = PageRequest.of(0, 5);
-        Doctor doctor = buildDoctor();
-        List<Doctor> doctors = new ArrayList<>();
-        doctors.add(doctor);
+        List<Doctor> doctors = List.of(
+                new Doctor(1L, "jan", "kowalski", "test@gmail.com", "pass", "Kardiolog", new HashSet<>(), new ArrayList<>()),
+                new Doctor(2L, "krzysztof", "nowak", "test2@gmail.com", "pass2", "Okulista", new HashSet<>(), new ArrayList<>())
+        );
         Page<Doctor> doctorPage = new PageImpl<>(doctors, pageable, doctors.size());
         when(doctorRepository.findAll(pageable)).thenReturn(doctorPage);
         //when
         PageContent<DoctorDTO> result = doctorService.getDoctors(pageable);
         //then
-        assertEquals(1L, result.getTotalElements());
+        assertEquals(2L, result.getTotalElements());
         assertEquals(0, result.getCurrentPage());
         assertEquals(1, result.getTotalPageNumber());
-        assertEquals(1L, result.getContent().getFirst().getId());
-        assertEquals("test@gmail.com", result.getContent().getFirst().getEmail());
-        assertEquals("jan", result.getContent().getFirst().getFirstName());
-        assertEquals("kowalski", result.getContent().getFirst().getLastName());
-        assertEquals("Kardiolog", result.getContent().getFirst().getSpecialization());
+        assertEquals(1L, result.getContent().get(0).getId());
+        assertEquals("jan", result.getContent().get(0).getFirstName());
+        assertEquals("kowalski", result.getContent().get(0).getLastName());
+        assertEquals("test@gmail.com", result.getContent().get(0).getEmail());
+        assertEquals("Kardiolog", result.getContent().get(0).getSpecialization());
+        assertNull(result.getContent().get(0).getInstitutionIds());
+        assertEquals(2L, result.getContent().get(1).getId());
+        assertEquals("krzysztof", result.getContent().get(1).getFirstName());
+        assertEquals("nowak", result.getContent().get(1).getLastName());
+        assertEquals("test2@gmail.com", result.getContent().get(1).getEmail());
+        assertEquals("Okulista", result.getContent().get(1).getSpecialization());
+        assertNull(result.getContent().get(1).getInstitutionIds());
     }
 
     @Test
@@ -84,7 +91,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void getDoctorByEmail_doctorDoesNotExists_exceptionThrown() {
+    void getDoctorByEmail_doctorDoesNotExists_DoctorNotFoundExceptionThrown() {
         //given
         String email = "test@gmail.com";
         when(doctorRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -119,7 +126,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void addDoctor_requestFieldIsNull_exceptionThrown() {
+    void addDoctor_requestFieldIsNull_DoctorDataIsNullExceptionThrown() {
         //given
         DoctorCommand doctorCommand = DoctorCommand.builder()
                 .firstName("jan")
@@ -136,7 +143,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void addDoctor_doctorAlreadyExists_exceptionThrown() {
+    void addDoctor_doctorAlreadyExists_DoctorAlreadyExistExceptionThrown() {
         //given
         DoctorCommand doctorCommand = DoctorCommand.builder()
                 .firstName("jan")
@@ -166,7 +173,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void deleteDoctorByEmail_doctorDoesNotExists_exceptionThrown() {
+    void deleteDoctorByEmail_doctorDoesNotExists_DoctorNotFoundExceptionThrown() {
         //given
         String email = "test@gmail.com";
         when(doctorRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -211,7 +218,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void editDoctorByEmail_requestFieldIsNull_exceptionThrown() {
+    void editDoctorByEmail_requestFieldIsNull_DoctorDataIsNullExceptionThrown() {
         //given
         String email = "test@gmail.com";
         DoctorCommand doctorCommand = DoctorCommand.builder()
@@ -231,7 +238,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void editDoctorByEmail_newEmailIsReserved_exceptionThrown() {
+    void editDoctorByEmail_newEmailIsReserved_DoctorAlreadyExistExceptionThrown() {
         //given
         String email = "test@gmail.com";
         DoctorCommand doctorCommand = DoctorCommand.builder()
@@ -252,7 +259,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void addInstitution_doctorExistsInstitutionExists_addInstitutionToDoctor() {
+    void addInstitution_DataCorrect_InstitutionAssigned() {
         //given
         String email = "test@gmail.com";
         String id = "1";
@@ -265,27 +272,20 @@ public class DoctorServiceTest {
                 .street("narutowicza")
                 .buildingNumber("12")
                 .build();
-        Set<Institution> institutions = new HashSet<>();
-        Doctor updatedDoctor = Doctor.builder()
-                .id(1L)
-                .email("test@gmail.com")
-                .password("pass")
-                .firstName("jan")
-                .lastName("kowalski")
-                .specialization("Kardiolog")
-                .institutions(institutions)
-                .build();
+        Set<Institution> institutions = Collections.singleton(institution);
         when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(doctor));
         when(institutionRepository.findById(Long.valueOf(id))).thenReturn(Optional.of(institution));
-        when(doctorRepository.save(any())).thenReturn(updatedDoctor);
         //when
-        DoctorDTO resultDoctorDTO = doctorService.addInstitution(email, id);
+        doctorService.addInstitution(email, id);
         //then
-        assertEquals(1L, resultDoctorDTO.getInstitutionIds().getFirst());
+        ArgumentCaptor<Doctor> doctorCaptor = ArgumentCaptor.forClass(Doctor.class);
+        verify(doctorRepository).save(doctorCaptor.capture());
+
+        assertEquals(institutions, doctorCaptor.getValue().getInstitutions());
     }
 
     @Test
-    void addInstitution_doctorDoesNotExists_exceptionThrown() {
+    void addInstitution_doctorDoesNotExists_DoctorNotFoundExceptionThrown() {
         //given
         String email = "test@gmail.com";
         String id = "1";
@@ -298,7 +298,7 @@ public class DoctorServiceTest {
     }
 
     @Test
-    void addInstitution_institutionDoesNotExists_exceptionThrown() {
+    void addInstitution_institutionDoesNotExists_InstitutionNotFoundExceptionThrown() {
         //given
         String email = "test@gmail.com";
         String id = "1";
@@ -308,7 +308,7 @@ public class DoctorServiceTest {
         //when_then
         InstitutionNotFoundException resultException = assertThrows(InstitutionNotFoundException.class, () -> doctorService.addInstitution(email, id));
         //then
-        assertEquals("Instituion with id: " + id + " do not exists", resultException.getMessage());
+        assertEquals("Institution with id: " + id + " do not exists", resultException.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, resultException.getHttpStatus());
     }
 

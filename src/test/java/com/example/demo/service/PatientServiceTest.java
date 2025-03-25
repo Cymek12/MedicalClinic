@@ -14,6 +14,7 @@ import com.example.demo.repository.PatientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,24 +47,32 @@ public class PatientServiceTest {
     void getPatients_patientsExists_ReturnPageContentDTO() {
         //given
         Pageable pageable = PageRequest.of(0, 5);
-        Patient currentPatient = buildPatient();
-        List<Patient> patients = new ArrayList<>();
-        patients.add(currentPatient);
+        List<Patient> patients = List.of(
+                new Patient(1L, "test@gmail.com", "pass", "123", "jan", "kowalski", "123456789", LocalDate.of(2000, 2, 17)),
+                new Patient(2L, "test2@gmail.com", "pass2", "321", "krzysztof", "nowak", "987654321", LocalDate.of(2001, 3, 2))
+        );
         Page<Patient> patientPage = new PageImpl<>(patients, pageable, patients.size());
         when(patientRepository.findAll(pageable)).thenReturn(patientPage);
         //when
         PageContent<PatientDTO> result = patientService.getPatients(pageable);
         //then
-        assertEquals(1, result.getTotalElements());
+        assertEquals(2, result.getTotalElements());
         assertEquals(0, result.getCurrentPage());
         assertEquals(1, result.getTotalPageNumber());
-        assertEquals(1L, result.getContent().getFirst().getId());
-        assertEquals("test@gmail.com", result.getContent().getFirst().getEmail());
-        assertEquals("123", result.getContent().getFirst().getIdCardNo());
-        assertEquals("jan", result.getContent().getFirst().getFirstName());
-        assertEquals("kowalski", result.getContent().getFirst().getLastName());
-        assertEquals("123456789", result.getContent().getFirst().getPhoneNumber());
-        assertEquals(LocalDate.of(2000, 2, 17), result.getContent().getFirst().getBirthday());
+        assertEquals(1L, result.getContent().get(0).getId());
+        assertEquals("test@gmail.com", result.getContent().get(0).getEmail());
+        assertEquals("123", result.getContent().get(0).getIdCardNo());
+        assertEquals("jan", result.getContent().get(0).getFirstName());
+        assertEquals("kowalski", result.getContent().get(0).getLastName());
+        assertEquals("123456789", result.getContent().get(0).getPhoneNumber());
+        assertEquals(LocalDate.of(2000, 2, 17), result.getContent().get(0).getBirthday());
+        assertEquals(2L, result.getContent().get(1).getId());
+        assertEquals("test2@gmail.com", result.getContent().get(1).getEmail());
+        assertEquals("321", result.getContent().get(1).getIdCardNo());
+        assertEquals("krzysztof", result.getContent().get(1).getFirstName());
+        assertEquals("nowak", result.getContent().get(1).getLastName());
+        assertEquals("987654321", result.getContent().get(1).getPhoneNumber());
+        assertEquals(LocalDate.of(2001, 3, 2), result.getContent().get(1).getBirthday());
     }
 
     @Test
@@ -86,7 +94,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    void getPatientByEmail_patientDoesNotExists_exceptionThrown() {
+    void getPatientByEmail_patientDoesNotExists_PatientNotFoundExceptionThrown() {
         //given
         String email = "test@gmail.com";
         //when_then
@@ -122,7 +130,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    void addPatient_patientDataIsNull_exceptionThrown() {
+    void addPatient_patientDataIsNull_PatientDataIsNullExceptionThrown() {
         //given
         PatientCommand patientCommand = PatientCommand.builder()
                 .email("test@gmail.com")
@@ -140,7 +148,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    void addPatient_patientAlreadyExists_exceptionThrown() {
+    void addPatient_patientAlreadyExists_PatientAlreadyExistExceptionThrown() {
         //given
         PatientCommand patientCommand = PatientCommand.builder()
                 .email("test@gmail.com")
@@ -172,7 +180,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    void deletePatientByEmail_patientDoesNotExist_exceptionThrown() {
+    void deletePatientByEmail_patientDoesNotExist_PatientNotFoundExceptionThrown() {
         //given
         String email = "test@gmail.com";
         when(patientRepository.findByEmail(email)).thenReturn(Optional.empty());
@@ -198,20 +206,23 @@ public class PatientServiceTest {
                 .build();
         Patient currentPatient = buildPatient();
         when(patientRepository.findByEmail(email)).thenReturn(Optional.of(currentPatient));
-        when(patientRepository.save(any())).thenReturn(currentPatient);
         //when
-        PatientDTO result = patientService.editPatient(email, patientCommand);
+        patientService.editPatient(email, patientCommand);
         //then
-        assertEquals("newemail@gmail.com", result.getEmail());
-        assertEquals("123", result.getIdCardNo());
-        assertEquals("jan", result.getFirstName());
-        assertEquals("kowalski", result.getLastName());
-        assertEquals("123456789", result.getPhoneNumber());
-        assertEquals(LocalDate.of(2000, 2, 17), result.getBirthday());
+        ArgumentCaptor<Patient> patientCaptor = ArgumentCaptor.forClass(Patient.class);
+        verify(patientRepository).save(patientCaptor.capture());
+
+        assertEquals("newemail@gmail.com", patientCaptor.getValue().getEmail());
+        assertEquals("newPass", patientCaptor.getValue().getPassword());
+        assertEquals("123", patientCaptor.getValue().getIdCardNo());
+        assertEquals("jan", patientCaptor.getValue().getFirstName());
+        assertEquals("kowalski", patientCaptor.getValue().getLastName());
+        assertEquals("123456789", patientCaptor.getValue().getPhoneNumber());
+        assertEquals(LocalDate.of(2000, 2, 17), patientCaptor.getValue().getBirthday());
     }
 
     @Test
-    void editPatient_patientDoesNotExists_exceptionThrown() {
+    void editPatient_patientDoesNotExists_PatientNotFoundExceptionThrown() {
         //given
         String email = "test@gmail.com";
         PatientCommand patientCommand = PatientCommand.builder()
@@ -232,7 +243,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    void editPatient_changeIdCardNo_exceptionThrown() {
+    void editPatient_changeIdCardNo_CannotChangeIdCardNoExceptionThrown() {
         //given
         String email = "test@gmail.com";
         PatientCommand patientCommand = PatientCommand.builder()
@@ -254,7 +265,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    void editPatient_patientDataIsNull_exceptionThrown() {
+    void editPatient_patientDataIsNull_PatientDataIsNullExceptionThrown() {
         //given
         String email = "test@gmail.com";
         PatientCommand patientCommand = PatientCommand.builder()
@@ -276,7 +287,7 @@ public class PatientServiceTest {
     }
 
     @Test
-    void editPatient_newEmailIsReserved_exceptionThrown() {
+    void editPatient_newEmailIsReserved_PatientAlreadyExistExceptionThrown() {
         //given
         String email = "test@gmail.com";
         PatientCommand patientCommand = PatientCommand.builder()
@@ -304,27 +315,25 @@ public class PatientServiceTest {
         String email = "test@gmail.com";
         PasswordRequest passwordRequest = new PasswordRequest("newPass");
         Patient currentPatient = buildPatient();
-        Patient updatedPatient = Patient.builder()
-                .id(1L)
-                .email("test@gmail.com")
-                .password("newPass")
-                .idCardNo("123")
-                .firstName("jan")
-                .lastName("kowalski")
-                .phoneNumber("123456789")
-                .birthday(LocalDate.of(2000, 2, 17))
-                .build();
         when(patientRepository.findByEmail(email)).thenReturn(Optional.of(currentPatient));
-        when(patientRepository.save(any())).thenReturn(updatedPatient);
         //when
-        PatientDTO result = patientService.editPassword(email, passwordRequest);
+        patientService.editPassword(email, passwordRequest);
         //then
-        assertEquals(1L, result.getId());
-        assertEquals("test@gmail.com", result.getEmail());
+        ArgumentCaptor<Patient> patientCaptor = ArgumentCaptor.forClass(Patient.class);
+        verify(patientRepository).save(patientCaptor.capture());
+
+        assertEquals(1L, patientCaptor.getValue().getId());
+        assertEquals("test@gmail.com", patientCaptor.getValue().getEmail());
+        assertEquals("newPass", patientCaptor.getValue().getPassword());
+        assertEquals("123", patientCaptor.getValue().getIdCardNo());
+        assertEquals("jan", patientCaptor.getValue().getFirstName());
+        assertEquals("kowalski", patientCaptor.getValue().getLastName());
+        assertEquals("123456789", patientCaptor.getValue().getPhoneNumber());
+        assertEquals(LocalDate.of(2000, 2, 17), patientCaptor.getValue().getBirthday());
     }
 
     @Test
-    void editPassword_patientDoesNotExists_exceptionThrown() {
+    void editPassword_patientDoesNotExists_PatientNotFoundExceptionThrown() {
         //given
         String email = "test@gmail.com";
         PasswordRequest passwordRequest = new PasswordRequest("newPass");

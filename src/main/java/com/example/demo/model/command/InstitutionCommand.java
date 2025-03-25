@@ -1,10 +1,12 @@
 package com.example.demo.model.command;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class InstitutionCommand {
     private String name;
     private String city;

@@ -35,8 +35,7 @@ public class VisitService {
         Visit visit = visitMapper.toEntity(visitCommand);
         validateVisit(visit, doctor);
         visit.setDoctor(doctor);
-        Visit savedVisit = visitRepository.save(visit);
-        return visitMapper.toDTO(savedVisit);
+        return visitMapper.toDTO(visitRepository.save(visit));
     }
 
     public PageContent<VisitDTO> getVisits(Pageable pageable) {

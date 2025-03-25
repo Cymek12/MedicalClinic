@@ -26,7 +26,7 @@ public class Visit {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Patient))
+        if (!(o instanceof Visit))
             return false;
         Visit other = (Visit) o;
         return id != null && id.equals(other.getId());
