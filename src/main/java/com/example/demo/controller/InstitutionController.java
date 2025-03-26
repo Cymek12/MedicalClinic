@@ -20,8 +20,8 @@ public class InstitutionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addInstitution(@RequestBody InstitutionCommand institutionCommand) {
-        institutionService.addInstitution(institutionCommand);
+    public InstitutionDTO addInstitution(@RequestBody InstitutionCommand institutionCommand) {
+        return institutionService.addInstitution(institutionCommand);
     }
 
     @GetMapping

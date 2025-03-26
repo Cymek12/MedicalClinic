@@ -21,9 +21,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,6 +99,19 @@ public class InstitutionServiceTest {
         //then
         assertEquals("Institution with name: " + name + " do not exists", resultException.getMessage());
         assertEquals(HttpStatus.NOT_FOUND, resultException.getHttpStatus());
+    }
+
+    @Test
+    void addInstitution_validationPassed_returnInstitutionDTO() {
+        //given
+        InstitutionCommand institutionCommand = InstitutionCommand.builder()
+                .name("szpital")
+                .city("lodz")
+                .zipCode("12123")
+                .street("narutowicza")
+                .buildingNumber("12")
+                .build();
+
     }
 
 

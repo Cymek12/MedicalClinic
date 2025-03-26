@@ -27,9 +27,8 @@ public class PatientController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addPatient(@RequestBody PatientCommand patientCommand) {
-        patientService.addPatient(patientCommand);
+    public PatientDTO addPatient(@RequestBody PatientCommand patientCommand) {
+        return patientService.addPatient(patientCommand);
     }
 
     @DeleteMapping("/{email}")

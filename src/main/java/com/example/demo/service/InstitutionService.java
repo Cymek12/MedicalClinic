@@ -48,10 +48,11 @@ public class InstitutionService {
                 .orElseThrow(() -> new InstitutionNotFoundException("Institution with name: " + name + " do not exists")));
     }
 
-    public void addInstitution(InstitutionCommand institutionCommand) {
+    public InstitutionDTO addInstitution(InstitutionCommand institutionCommand) {
         Institution institution = institutionMapper.toEntity(institutionCommand);
         validateAddingInstitution(institution);
-        institutionRepository.save(institution);
+        Institution savedInstitution = institutionRepository.save(institution);
+        return institutionMapper.toDTO(savedInstitution);
     }
 
     public void addInstitutionsWithDoctors(List<FullInstitutionDTO> fullInstitutionDTOS) {
