@@ -83,7 +83,7 @@ public class InstitutionServiceTest {
         InstitutionDTO result = institutionService.getInstitutionByName(name);
         //then
 //        tu nie działa porownanie Id, excepted: 1L, actual: null
-//        assertEquals(1L, result.getId());
+        assertEquals(1L, result.getId());
         assertEquals(name, result.getName());
         assertEquals("lodz", result.getCity());
         assertEquals("narutowicza", result.getStreet());
@@ -117,6 +117,7 @@ public class InstitutionServiceTest {
 
     private Institution buildInstitution(String name) {
         return Institution.builder()
+                .id(1L)
                 .name(name)
                 .city("lodz")
                 .zipCode("12123")

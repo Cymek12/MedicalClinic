@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.print.Doc;
-
 
 @RestController
 @RequestMapping("/doctors")
@@ -19,7 +17,6 @@ public class DoctorController {
     private final DoctorService doctorService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public DoctorDTO addDoctor(@RequestBody DoctorCommand doctorCommand) {
         return doctorService.addDoctor(doctorCommand);
     }

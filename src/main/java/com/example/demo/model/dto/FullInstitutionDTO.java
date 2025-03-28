@@ -1,6 +1,5 @@
 package com.example.demo.model.dto;
 
-import com.example.demo.model.DoctorRequest;
 import com.example.demo.model.command.DoctorCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

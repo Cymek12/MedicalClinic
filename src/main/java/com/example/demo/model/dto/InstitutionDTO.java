@@ -2,12 +2,14 @@ package com.example.demo.model.dto;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class InstitutionDTO {
     private Long id;
     private String name;

@@ -19,7 +19,6 @@ public class InstitutionController {
     private final InstitutionService institutionService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public InstitutionDTO addInstitution(@RequestBody InstitutionCommand institutionCommand) {
         return institutionService.addInstitution(institutionCommand);
     }
@@ -35,8 +34,8 @@ public class InstitutionController {
     }
 
     @PutMapping("/{name}")
-    public void editInstitutionByName(@PathVariable("name") String name, @RequestBody InstitutionCommand institutionCommand) {
-        institutionService.editInstitutionByName(name, institutionCommand);
+    public InstitutionDTO editInstitutionByName(@PathVariable("name") String name, @RequestBody InstitutionCommand institutionCommand) {
+        return institutionService.editInstitutionByName(name, institutionCommand);
     }
 
     @DeleteMapping("/{name}")

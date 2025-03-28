@@ -13,7 +13,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "DOCTORS")
 @Builder
 public class Doctor {
     @Id

@@ -44,8 +44,9 @@ public class InstitutionService {
     }
 
     public InstitutionDTO getInstitutionByName(String name) {
-        return institutionMapper.toDTO(institutionRepository.findByName(name)
-                .orElseThrow(() -> new InstitutionNotFoundException("Institution with name: " + name + " do not exists")));
+        Institution institution = institutionRepository.findByName(name)
+                .orElseThrow(() -> new InstitutionNotFoundException("Institution with name: " + name + " do not exists"));
+        return institutionMapper.toDTO(institution);
     }
 
     public InstitutionDTO addInstitution(InstitutionCommand institutionCommand) {
@@ -128,13 +129,14 @@ public class InstitutionService {
         institutionRepository.delete(institution);
     }
 
-    public void editInstitutionByName(String name, InstitutionCommand institutionCommand) {
+    public InstitutionDTO editInstitutionByName(String name, InstitutionCommand institutionCommand) {
         Institution institution = institutionRepository.findByName(name)
                 .orElseThrow(() -> new InstitutionNotFoundException("Institution with name: " + name + " do not exists"));
         Institution newInstitutionData = institutionMapper.toEntity(institutionCommand);
         validateNewInstitutionData(institution, newInstitutionData);
         institution.editInstitutionData(newInstitutionData);
-        institutionRepository.save(institution);
+        Institution savedInstitution = institutionRepository.save(institution);
+        return institutionMapper.toDTO(savedInstitution);
     }
 
     private void validateNewInstitutionData(Institution institution, Institution newInstitutionData) {
