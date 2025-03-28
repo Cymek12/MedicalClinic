@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: Jakub
+      changes:
+        - createTable:
+            tableName: DOCTORS_INSTITUTIONS
+            columns:
+              - column:
+                  name: doctors_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKey: true
+                    foreignKeyName: fk_doctorsInstitutions_doctor
+                    referencedTableName: DOCTOR
+                    referencedColumnNames: id
+              - column:
+                  name: institutions_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKey: true
+                    foreignKeyName: fk_doctorsInstitutions_institution
+                    referencedTableName: INSTITUTION
+                    referencedColumnNames: id
