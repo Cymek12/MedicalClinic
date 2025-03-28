@@ -7,20 +7,20 @@ databaseChangeLog:
             tableName: DOCTORS_INSTITUTIONS
             columns:
               - column:
-                  name: doctors_id
+                  name: DOCTORS_ID
                   type: bigint
                   constraints:
                     nullable: false
                     foreignKey: true
                     foreignKeyName: fk_doctorsInstitutions_doctor
                     referencedTableName: DOCTOR
-                    referencedColumnNames: id
+                    referencedColumnNames: ID
               - column:
-                  name: institutions_id
+                  name: INSTITUTIONS_ID
                   type: bigint
                   constraints:
                     nullable: false
                     foreignKey: true
                     foreignKeyName: fk_doctorsInstitutions_institution
                     referencedTableName: INSTITUTION
-                    referencedColumnNames: id
+                    referencedColumnNames: ID

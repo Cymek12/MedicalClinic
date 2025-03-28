@@ -7,7 +7,7 @@ databaseChangeLog:
             tableName: PATIENT
             columns:
               - column:
-                  name: id
+                  name: ID
                   type: bigint
                   autoIncrement: true
                   constraints:
@@ -15,38 +15,38 @@ databaseChangeLog:
                     unique: true
                     nullable: false
               - column:
-                  name: email
+                  name: EMAIL
                   type: varchar(40)
                   constraints:
                     unique: true
                     nullable: false
               - column:
-                  name: password
+                  name: PASSWORD
                   type: varchar(20)
                   constraints:
                     nullable: false
               - column:
-                  name: idCardNo
+                  name: ID_CARD_NO
                   type: varchar(10)
                   constraints:
                     nullable: false
               - column:
-                  name: firstName
+                  name: FIRST_NAME
                   type: varchar(20)
                   constraints:
                     nullable: false
               - column:
-                  name: lastName
+                  name: LAST_NAME
                   type: varchar(30)
                   constraints:
                     nullable: false
               - column:
-                  name: phoneNumber
+                  name: PHONE_NUMBER
                   type: varchar(12)
                   constraints:
                     nullable: false
               - column:
-                  name: birthday
+                  name: BIRTHDAY
                   type: date
                   constraints:
                     nullable: false
@@ -58,7 +58,7 @@ databaseChangeLog:
             tableName: DOCTOR
             columns:
               - column:
-                  name: id
+                  name: ID
                   type: bigint
                   autoIncrement: true
                   constraints:
@@ -66,28 +66,28 @@ databaseChangeLog:
                     primaryKey: true
                     unique: true
               - column:
-                  name: firstName
+                  name: FIRST_NAME
                   type: varchar(20)
                   constraints:
                     nullable: false
               - column:
-                  name: lastName
+                  name: LAST_NAME
                   type: varchar(30)
                   constraints:
                     nullable: false
               - column:
-                  name: email
+                  name: EMAIL
                   type: varchar(40)
                   constraints:
                     nullable: false
                     unique: true
               - column:
-                  name: password
+                  name: PASSWORD
                   type: varchar(20)
                   constraints:
                     nullable: false
               - column:
-                  name: specialization
+                  name: SPECIALIZATION
                   type: varchar(20)
                   constraints:
                     nullable: false
@@ -99,7 +99,7 @@ databaseChangeLog:
             tableName: INSTITUTION
             columns:
               - column:
-                  name: id
+                  name: ID
                   type: bigint
                   autoIncrement: true
                   constraints:
@@ -107,28 +107,28 @@ databaseChangeLog:
                     primaryKey: true
                     unique: true
               - column:
-                  name: name
+                  name: NAME
                   type: varchar(15)
                   constraints:
                     nullable: false
                     unique: true
               - column:
-                  name: city
+                  name: CITY
                   type: varchar(20)
                   constraints:
                     nullable: false
               - column:
-                  name: zipCode
+                  name: ZIP_CODE
                   type: varchar(10)
                   constraints:
                     nullable: false
               - column:
-                  name: street
+                  name: STREET
                   type: varchar(30)
                   constraints:
                     nullable: false
               - column:
-                  name: buildingNumber
+                  name: BUILDING_NUMBER
                   type: varchar(5)
                   constraints:
                     nullable: false

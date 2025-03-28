@@ -7,7 +7,7 @@ databaseChangeLog:
             tableName: VISIT
             columns:
               - column:
-                  name: id
+                  name: ID
                   type: bigint
                   autoIncrement: true
                   constraints:
@@ -15,29 +15,29 @@ databaseChangeLog:
                     primaryKey: true
                     unique: true
               - column:
-                  name: startDateTime
+                  name: START_DATE_TIME
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: endDateTime
+                  name: END_DATE_TIME
                   type: datetime
                   constraints:
                     nullable: false
               - column:
-                  name: doctor_id
+                  name: DOCTOR_ID
                   type: bigint
                   constraints:
                     foreignKey: true
                     foreignKeyName: fk_visit_doctor
                     referencedTableName: DOCTOR
-                    referencedColumnNames: id
+                    referencedColumnNames: ID
               - column:
-                  name: patient_id
+                  name: PATIENT_ID
                   type: bigint
                   constraints:
                     foreignKey: true
                     foreignKeyName: fk_visit_patient
                     referencedTableName: PATIENT
-                    referencedColumnNames: id
+                    referencedColumnNames: ID
 
