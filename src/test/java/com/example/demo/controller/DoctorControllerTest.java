@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,6 +31,7 @@ import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("classpath:application-test.properties")
 public class DoctorControllerTest {
     @MockitoBean
     private DoctorService doctorService;

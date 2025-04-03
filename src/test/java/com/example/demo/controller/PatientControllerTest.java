@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("classpath:application-test.properties")
 public class PatientControllerTest {
     @MockitoBean
     private PatientService patientService;
@@ -183,8 +185,8 @@ public class PatientControllerTest {
         PatientCommand patientCommand = buildPatientCommand("new2@gmail.com");
         when(patientService.editPatient(eq(email), any())).thenThrow(new PatientNotFoundException("Patient not found"));
         mockMvc.perform(put("/patients/{email}", email)
-                .content(objectMapper.writeValueAsString(patientCommand))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(patientCommand))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Patient not found"))
@@ -198,8 +200,8 @@ public class PatientControllerTest {
         PatientDTO patientDTO = buildPatientDTO(1L, "new@gmail.com");
         when(patientService.editPassword(eq(email), any())).thenReturn(patientDTO);
         mockMvc.perform(patch("/patients/{email}", email)
-                .content(objectMapper.writeValueAsString(passwordRequest))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(passwordRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
