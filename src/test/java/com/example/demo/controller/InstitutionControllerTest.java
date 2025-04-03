@@ -1,13 +1,11 @@
 package com.example.demo.controller;
 
-import com.example.demo.exceptions.doctor.DoctorNotFoundException;
 import com.example.demo.exceptions.institution.InstitutionAlreadyExistException;
 import com.example.demo.exceptions.institution.InstitutionDataIsNullException;
 import com.example.demo.exceptions.institution.InstitutionNotFoundException;
 import com.example.demo.model.PageContent;
 import com.example.demo.model.command.DoctorCommand;
 import com.example.demo.model.command.InstitutionCommand;
-import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.model.dto.FullInstitutionDTO;
 import com.example.demo.model.dto.InstitutionDTO;
 import com.example.demo.service.InstitutionService;

@@ -51,7 +51,7 @@ public class PatientControllerTest {
         );
         PageContent<PatientDTO> pageContentDTO = new PageContent<>(2L, 0, 1, patients);
         when(patientService.getPatients(pageable)).thenReturn(pageContentDTO);
-        mockMvc.perform(get("/patients?size=5&page=0")//.param(size).param(page)
+        mockMvc.perform(get("/patients?size=5&page=0")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -108,7 +108,7 @@ public class PatientControllerTest {
     }
 
     @Test
-    void addPatient_returnPatientDTO() throws Exception { //returnHTTPstatusOK//usunac srodek //utworzyc klase testUstil ktora ma statyczne metody i tworzy odpowiednie obiekty testowe
+    void addPatient_returnPatientDTO() throws Exception {
         PatientCommand patientCommand = buildPatientCommand("new@gmail.com");
         PatientDTO patientDTO = buildPatientDTO(1L, "new@gmail.com");
         when(patientService.addPatient(any())).thenReturn(patientDTO);

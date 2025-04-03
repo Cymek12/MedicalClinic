@@ -73,7 +73,6 @@ public class VisitControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(visitCommand)))
                 .andDo(print());
-
     }
 
     @Test
