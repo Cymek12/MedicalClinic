@@ -26,12 +26,17 @@ public class VisitController {
     }
 
     @PatchMapping("/{patientEmail}/{visitId}")
-    public void reserveVisit(@PathVariable("patientEmail") String email, @PathVariable("visitId") String id) {
-        visitService.reserveVisit(email, id);
+    public VisitDTO reserveVisit(@PathVariable("patientEmail") String email, @PathVariable("visitId") String id) {
+        return visitService.reserveVisit(email, id);
     }
 
     @GetMapping
     public PageContent<VisitDTO> getVisits(Pageable pageable) {
         return visitService.getVisits(pageable);
+    }
+
+    @GetMapping("/{patientEmail}")
+    public PageContent<VisitDTO> getVisitsByPatient(@PathVariable("patientEmail") String patientEmail, Pageable pageable) {
+        return visitService.getVisitsByPatient(patientEmail, pageable);
     }
 }

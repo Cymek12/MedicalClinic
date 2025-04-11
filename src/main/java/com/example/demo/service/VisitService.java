@@ -87,12 +87,27 @@ public class VisitService {
         }
     }
 
-    public void reserveVisit(String email, String id) {
+    public VisitDTO reserveVisit(String email, String id) {
         Patient patient = patientRepository.findByEmail(email)
                 .orElseThrow(() -> new PatientNotFoundException("Patient with email: " + email + " does not exist"));
         Visit visit = visitRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new VisitNotFoundException("Visit with id: " + id + " does not exist"));
         visit.setPatient(patient);
-        visitRepository.save(visit);
+        Visit savedVisit = visitRepository.save(visit);
+        return visitMapper.toDTO(savedVisit);
+    }
+
+    public PageContent<VisitDTO> getVisitsByPatient(String patientEmail, Pageable pageable) {
+        if (!patientRepository.existsByEmail(patientEmail)){
+            throw new PatientNotFoundException("Patient with email: " + patientEmail + " does not exist");
+        }
+        Page<Visit> visitByPatientPage = visitRepository.findByPatientEmail(patientEmail, pageable);
+        List<VisitDTO> visitDTOs = visitMapper.toDTO(visitByPatientPage.getContent());
+        return new PageContent<>(
+                visitByPatientPage.getTotalElements(),
+                visitByPatientPage.getNumber(),
+                visitByPatientPage.getTotalPages(),
+                visitDTOs
+        );
     }
 }

@@ -41,5 +41,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
             @Param("endDateTime") LocalDateTime endDateTime
     );
 
+    Page<Visit> findByPatientEmail(String patientEmail, Pageable pageable);
+
 
 }
