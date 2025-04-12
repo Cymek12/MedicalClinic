@@ -5,6 +5,7 @@ import com.example.demo.exceptions.patient.PatientNotFoundException;
 import com.example.demo.exceptions.visit.*;
 import com.example.demo.model.command.VisitCommand;
 import com.example.demo.model.PageContent;
+import com.example.demo.model.command.VisitDayCommand;
 import com.example.demo.model.dto.VisitDTO;
 import com.example.demo.model.entity.Doctor;
 import com.example.demo.model.entity.Patient;
@@ -18,6 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,12 +81,12 @@ public class VisitService {
         }
 
         List<Visit> overlappingVisits = visitRepository.findOverlappingVisits(doctor, visit.getStartDateTime(), visit.getEndDateTime());
-        if(!overlappingVisits.isEmpty()) {
+        if (!overlappingVisits.isEmpty()) {
             throw new VisitOverlapsException("Visit cannot overlaps with another visit");
         }
 
         List<Visit> violatingBreakVisits = visitRepository.findVisitsViolatingBreak(doctor, visit.getStartDateTime(), visit.getEndDateTime());
-        if(!violatingBreakVisits.isEmpty()) {
+        if (!violatingBreakVisits.isEmpty()) {
             throw new VisitViolatesBreakException("Visit should be separated by 15-minute break");
         }
     }
@@ -98,7 +102,7 @@ public class VisitService {
     }
 
     public PageContent<VisitDTO> getVisitsByPatient(String patientEmail, Pageable pageable) {
-        if (!patientRepository.existsByEmail(patientEmail)){
+        if (!patientRepository.existsByEmail(patientEmail)) {
             throw new PatientNotFoundException("Patient with email: " + patientEmail + " does not exist");
         }
         Page<Visit> visitByPatientPage = visitRepository.findByPatientEmail(patientEmail, pageable);
@@ -110,4 +114,42 @@ public class VisitService {
                 visitDTOs
         );
     }
+
+    public PageContent<VisitDTO> getAvailableVisitsByDoctor(String doctorEmail, Pageable pageable) {
+        if (!doctorRepository.existsByEmail(doctorEmail)) {
+            throw new DoctorNotFoundException("Doctor with email: " + doctorEmail + " does not exists");
+        }
+        Page<Visit> visitPage = visitRepository.findByDoctorEmail(doctorEmail, pageable);
+        List<VisitDTO> availableVisits = visitPage.getContent().stream()
+                .filter(visitDTO -> visitDTO.getDoctor().getEmail().equals(doctorEmail))
+                .map(visit -> visitMapper.toDTO(visit))
+                .toList();
+        return new PageContent<>(
+                visitPage.getTotalElements(),
+                visitPage.getNumber(),
+                visitPage.getTotalPages(),
+                availableVisits
+        );
+    }
+
+//    public PageContent<VisitDTO> getAvailableVisitsForDayByDoctorSpecialization(VisitDayCommand visitDayCommand, String specialization, Pageable pageable) {
+//        if (!doctorRepository.existsBySpecialization(specialization)) {
+//            return new PageContent<>(
+//                    0L,
+//                    0,
+//                    0,
+//                    new ArrayList<>()
+//            );
+//        }
+//
+//        LocalDate localDate = visitDayCommand.getLocalDate();
+//        Page<Visit> vistsPage = visitRepository.findAll(pageable);
+//        vistsPage.getContent().stream()
+//                .filter(visit -> (visit.getEndDateTime() == localDate.getYear() && visi ))
+//    }
+
+//    private boolean isVisitEqualsDay(LocalDateTime visitEndDate, VisitDayCommand visitDayCommand) {
+//        LocalDate localDate = visitDayCommand.getLocalDate();
+//
+//    }
 }

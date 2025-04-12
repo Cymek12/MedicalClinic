@@ -6,7 +6,6 @@ import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 

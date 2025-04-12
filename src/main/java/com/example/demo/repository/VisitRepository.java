@@ -43,5 +43,7 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     Page<Visit> findByPatientEmail(String patientEmail, Pageable pageable);
 
+    Page<Visit> findByDoctorEmail(String doctorEmail, Pageable pageable);
+
 
 }

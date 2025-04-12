@@ -39,4 +39,9 @@ public class VisitController {
     public PageContent<VisitDTO> getVisitsByPatient(@PathVariable("patientEmail") String patientEmail, Pageable pageable) {
         return visitService.getVisitsByPatient(patientEmail, pageable);
     }
+
+    @GetMapping("/available/{doctorEmail}")
+    public PageContent<VisitDTO> getAvailableVisitsByDoctor(@PathVariable("doctorEmail") String doctorEmail, Pageable pageable) {
+        return visitService.getAvailableVisitsByDoctor(doctorEmail, pageable);
+    }
 }

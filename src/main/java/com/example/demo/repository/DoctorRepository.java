@@ -15,4 +15,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     boolean existsByEmail(String email);
 
     Page<Doctor> findAll(Pageable pageable);
+
+    boolean existsBySpecialization(String specialization);
 }
