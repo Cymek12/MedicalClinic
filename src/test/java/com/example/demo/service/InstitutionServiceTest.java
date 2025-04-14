@@ -82,7 +82,6 @@ public class InstitutionServiceTest {
         //when
         InstitutionDTO result = institutionService.getInstitutionByName(name);
         //then
-//        tu nie działa porownanie Id, excepted: 1L, actual: null
         assertEquals(1L, result.getId());
         assertEquals(name, result.getName());
         assertEquals("lodz", result.getCity());

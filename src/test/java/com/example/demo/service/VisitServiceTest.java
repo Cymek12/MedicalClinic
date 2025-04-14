@@ -46,35 +46,34 @@ public class VisitServiceTest {
         this.visitService = new VisitService(visitRepository, doctorRepository, visitMapper, patientRepository);
     }
 
-//    @Test
-//    void createVisit_validationPassedDoctorExists_returnVisitDTO() {
-////        ten test nie dziala bo resultVisitDTO jest null ale nie wiem dlaczego
-//        //given
-//        String email = "test@gmail.com";
-//        VisitCommand visitCommand = VisitCommand.builder()
-//                .startDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 0)))
-//                .endDateTime((LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 0))))
-//                .build();
-//        Doctor doctor = buildDoctor();
-//        Visit exceptedVisit = Visit.builder()
-//                .id(1L)
-//                .startDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 0)))
-//                .endDateTime((LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 0))))
-//                .build();
-//        when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(doctor));
-//        when(doctorRepository.save(any())).thenReturn(exceptedVisit);
-//        //when
-//        VisitDTO resultVisitDTO = visitService.createVisit(email, visitCommand);
-//        //then
-//        ArgumentCaptor<Visit> visitCaptor = ArgumentCaptor.forClass(Visit.class);
-//        verify(visitRepository).save(visitCaptor.capture());
-//
-//        assertEquals(1L, resultVisitDTO.getId());
-//        assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 0)), visitCaptor.getValue().getStartDateTime());
-//        assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 0)), visitCaptor.getValue().getEndDateTime());
-//        assertEquals(1L, visitCaptor.getValue().getDoctor().getId());
-//        assertEquals("test@gmail.com", visitCaptor.getValue().getDoctor().getEmail());
-//    }
+    @Test
+    void createVisit_validationPassedDoctorExists_returnVisitDTO() {
+        //given
+        String email = "test@gmail.com";
+        VisitCommand visitCommand = VisitCommand.builder()
+                .startDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 0)))
+                .endDateTime((LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 0))))
+                .build();
+        Doctor doctor = buildDoctor();
+        Visit exceptedVisit = Visit.builder()
+                .id(1L)
+                .startDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 0)))
+                .endDateTime((LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 0))))
+                .build();
+        when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(doctor));
+        when(doctorRepository.save(any())).thenReturn(exceptedVisit);
+        //when
+        VisitDTO resultVisitDTO = visitService.createVisit(email, visitCommand);
+        //then
+        ArgumentCaptor<Visit> visitCaptor = ArgumentCaptor.forClass(Visit.class);
+        verify(visitRepository).save(visitCaptor.capture());
+
+        assertEquals(1L, resultVisitDTO.getId());
+        assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 0)), visitCaptor.getValue().getStartDateTime());
+        assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 0)), visitCaptor.getValue().getEndDateTime());
+        assertEquals(1L, visitCaptor.getValue().getDoctor().getId());
+        assertEquals("test@gmail.com", visitCaptor.getValue().getDoctor().getEmail());
+    }
 
     @Test
     void createVisit_doctorDoesNotExists_DoctorNotFoundExceptionThrown() {
@@ -126,23 +125,22 @@ public class VisitServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, resultException.getHttpStatus());
     }
 
-//    @Test
-//    void createVisit_wrongTimeFormat_WrongVisitTimeFormatExceptionThrown() {
-//        //tutaj nie rzuca mi wyjatku w ogole nie wiem dlaczego
-//        //given
-//        String email = "test@gmail.com";
-//        VisitCommand visitCommand = VisitCommand.builder()
-//                .startDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 12, 0)))
-//                .endDateTime((LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 15, 0))))
-//                .build();
-//        Doctor doctor = buildDoctor();
-//        when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(doctor));
-//        //when_then
-//        WrongVisitTimeFormatException resultException = assertThrows(WrongVisitTimeFormatException.class, () -> visitService.createVisit(email, visitCommand));
-//        //then
-//        assertEquals("Visit can only be scheduled at 15-minute intervals", resultException.getMessage());
-//        assertEquals(HttpStatus.BAD_REQUEST, resultException.getHttpStatus());
-//    }
+    @Test
+    void createVisit_wrongTimeFormat_WrongVisitTimeFormatExceptionThrown() {
+        //given
+        String email = "test@gmail.com";
+        VisitCommand visitCommand = VisitCommand.builder()
+                .startDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 12, 0)))
+                .endDateTime((LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 15, 0))))
+                .build();
+        Doctor doctor = buildDoctor();
+        when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(doctor));
+        //when_then
+        WrongVisitTimeFormatException resultException = assertThrows(WrongVisitTimeFormatException.class, () -> visitService.createVisit(email, visitCommand));
+        //then
+        assertEquals("Visit can only be scheduled at 15-minute intervals", resultException.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, resultException.getHttpStatus());
+    }
 
     @Test
     void createVisit_endTimeAfterStartTime_WrongVisitTimeFormatExceptionThrown() {
