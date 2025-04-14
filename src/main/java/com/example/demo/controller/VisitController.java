@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.command.ReserveVisitCommand;
 import com.example.demo.model.command.VisitCommand;
 import com.example.demo.model.PageContent;
+import com.example.demo.model.command.VisitDayCommand;
 import com.example.demo.model.dto.VisitDTO;
 import com.example.demo.service.VisitService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,9 @@ public class VisitController {
         return visitService.getAvailableVisits(pageable);
     }
 
-    @PatchMapping("/{patientEmail}/{visitId}")
-    public VisitDTO reserveVisit(@PathVariable("patientEmail") String email, @PathVariable("visitId") String id) {
-        return visitService.reserveVisit(email, id);
+    @PatchMapping("/reservation")
+    public VisitDTO reserveVisit(@RequestBody ReserveVisitCommand reserveVisitCommand) {
+        return visitService.reserveVisit(reserveVisitCommand.getPatientEmail(), reserveVisitCommand.getVisitId());
     }
 
     @GetMapping
@@ -35,13 +37,22 @@ public class VisitController {
         return visitService.getVisits(pageable);
     }
 
-    @GetMapping("/{patientEmail}")
-    public PageContent<VisitDTO> getVisitsByPatient(@PathVariable("patientEmail") String patientEmail, Pageable pageable) {
+    @GetMapping("/byPatient")
+    public PageContent<VisitDTO> getVisitsByPatient(@RequestParam(required = false) String patientEmail, Pageable pageable) {
         return visitService.getVisitsByPatient(patientEmail, pageable);
     }
 
     @GetMapping("/available/{doctorEmail}")
     public PageContent<VisitDTO> getAvailableVisitsByDoctor(@PathVariable("doctorEmail") String doctorEmail, Pageable pageable) {
         return visitService.getAvailableVisitsByDoctor(doctorEmail, pageable);
+    }
+
+    @GetMapping("/available/specialization")
+    PageContent<VisitDTO> getAvailableVisitsByDayAndSpecialization(
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false) VisitDayCommand visitDayCommand,
+            Pageable pageable
+    ){
+        return visitService.getAvailableVisitsByDayAndSpecialization(visitDayCommand, specialization, pageable);
     }
 }

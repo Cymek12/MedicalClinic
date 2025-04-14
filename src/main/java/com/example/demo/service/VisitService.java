@@ -121,8 +121,8 @@ public class VisitService {
         }
         Page<Visit> visitPage = visitRepository.findByDoctorEmail(doctorEmail, pageable);
         List<VisitDTO> availableVisits = visitPage.getContent().stream()
-                .filter(visitDTO -> visitDTO.getDoctor().getEmail().equals(doctorEmail))
-                .map(visit -> visitMapper.toDTO(visit))
+                .filter(visitDTO -> visitDTO.getPatient() == null)
+                .map(visitMapper::toDTO)
                 .toList();
         return new PageContent<>(
                 visitPage.getTotalElements(),
@@ -132,24 +132,19 @@ public class VisitService {
         );
     }
 
-//    public PageContent<VisitDTO> getAvailableVisitsForDayByDoctorSpecialization(VisitDayCommand visitDayCommand, String specialization, Pageable pageable) {
-//        if (!doctorRepository.existsBySpecialization(specialization)) {
-//            return new PageContent<>(
-//                    0L,
-//                    0,
-//                    0,
-//                    new ArrayList<>()
-//            );
-//        }
-//
-//        LocalDate localDate = visitDayCommand.getLocalDate();
-//        Page<Visit> vistsPage = visitRepository.findAll(pageable);
-//        vistsPage.getContent().stream()
-//                .filter(visit -> (visit.getEndDateTime() == localDate.getYear() && visi ))
-//    }
-
-//    private boolean isVisitEqualsDay(LocalDateTime visitEndDate, VisitDayCommand visitDayCommand) {
-//        LocalDate localDate = visitDayCommand.getLocalDate();
-//
-//    }
+    public PageContent<VisitDTO> getAvailableVisitsByDayAndSpecialization(VisitDayCommand visitDayCommand, String specialization, Pageable pageable) {
+        if (!doctorRepository.existsBySpecialization(specialization)) {
+            throw new DoctorNotFoundException("Doctor with specialization: " + specialization + " does not exist");
+        }
+        LocalDate date = visitDayCommand.getLocalDate();
+        LocalDateTime startOfDay = date.atTime(0,0,1);
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        Page<Visit> visitPage = visitRepository.findVisitsByDate(startOfDay, endOfDay, pageable);
+        return new PageContent<>(
+                visitPage.getTotalElements(),
+                visitPage.getNumber(),
+                visitPage.getTotalPages(),
+                visitMapper.toDTO(visitPage.getContent())
+        );
+    }
 }

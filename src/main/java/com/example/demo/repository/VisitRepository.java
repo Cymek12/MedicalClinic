@@ -45,5 +45,12 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
 
     Page<Visit> findByDoctorEmail(String doctorEmail, Pageable pageable);
 
+    @Query("SELECT v FROM Visit v WHERE "
+            + "(v.startDateTime >= :startDate AND v.startDateTime < :endDate) "
+            + "OR (v.endDateTime >= :startDate AND v.endDateTime < :endDate) "
+            + "OR (v.startDateTime <= :startDate AND v.endDateTime >= :endDate)")
+    Page<Visit> findVisitsByDate(@Param("startDate") LocalDateTime startDate,
+                                 @Param("endDate") LocalDateTime endDate, Pageable pageable);
+
 
 }

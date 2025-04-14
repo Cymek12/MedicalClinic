@@ -4,6 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.exceptions.doctor.DoctorNotFoundException;
 import com.example.demo.exceptions.visit.VisitNotFoundException;
 import com.example.demo.model.PageContent;
+import com.example.demo.model.command.ReserveVisitCommand;
 import com.example.demo.model.command.VisitCommand;
 import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.model.dto.PatientDTO;
@@ -123,22 +124,34 @@ public class VisitControllerTest {
     }
 
     @Test
-    void reserveVisit() throws Exception {
-        String patientEmail = "patient@gmail.com";
-        String visitId = "1";
-        mockMvc.perform(patch("/visits/{patientEmail}/{visitId}", patientEmail, visitId)
-                        .contentType(MediaType.APPLICATION_JSON))
+    void reserveVisit_returnVisitDTO() throws Exception {
+        VisitDTO visitDTO = buildVisitDTO(1L, null, null);
+         ReserveVisitCommand reserveVisitCommand = ReserveVisitCommand.builder()
+                .patientEmail("patient@gmail.com")
+                .visitId("1")
+                 .build();
+         String patientEmail = "patient@gmail.com";
+         String visitId = "1";
+         when(visitService.reserveVisit(eq(patientEmail), eq(visitId))).thenReturn(visitDTO);
+        mockMvc.perform(patch("/visits/reservation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reserveVisitCommand)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
     void reserveVisit_returnHttpStatus() throws Exception {
+        ReserveVisitCommand reserveVisitCommand = ReserveVisitCommand.builder()
+                .patientEmail("patient@gmail.com")
+                .visitId("1")
+                .build();
         String patientEmail = "patient@gmail.com";
         String visitId = "1";
         doThrow(new VisitNotFoundException("Visit does not exist")).when(visitService).reserveVisit(patientEmail, visitId);
-        mockMvc.perform(patch("/visits/{patientEmail}/{visitId}", patientEmail, visitId)
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(patch("/visits/reservation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(reserveVisitCommand)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Visit does not exist"))
