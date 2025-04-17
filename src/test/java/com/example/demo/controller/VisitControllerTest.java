@@ -7,7 +7,6 @@ import com.example.demo.model.PageContent;
 import com.example.demo.model.command.ReserveVisitCommand;
 import com.example.demo.model.command.VisitCommand;
 import com.example.demo.model.dto.DoctorDTO;
-import com.example.demo.model.dto.PatientDTO;
 import com.example.demo.model.dto.VisitDTO;
 import com.example.demo.service.VisitService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,12 +21,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.demo.TestDataBuilder.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -84,8 +80,10 @@ public class VisitControllerTest {
                 buildVisitDTO(2L, buildDoctorDTO(2L, "doctor2@gmail.com"), buildPatientDTO(2L, "patient2@gmail.com"))
         );
         PageContent<VisitDTO> pageContentDTO = new PageContent<>(2L, 0, 1, visits);
-        when(visitService.getAvailableVisits(pageable)).thenReturn(pageContentDTO);
-        mockMvc.perform(get("/visits/available?size=5&page=0")//.param(size).param(page)
+        when(visitService.getAvailableVisitsProcessor(pageable, null, null, null, null)).thenReturn(pageContentDTO);
+        mockMvc.perform(get("/visits/available")
+                        .param("page", "0")
+                        .param("size", "5")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -153,7 +151,7 @@ public class VisitControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reserveVisitCommand)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Visit does not exist"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -203,46 +201,5 @@ public class VisitControllerTest {
                 .andExpect(jsonPath("$.content[1].patientDTO.lastName").value("kowalski"))
                 .andExpect(jsonPath("$.content[1].patientDTO.phoneNumber").value("123456789"))
                 .andExpect(jsonPath("$.content[1].patientDTO.birthday").value("2000-02-17"));
-    }
-
-
-    private VisitDTO buildVisitDTO(Long id, DoctorDTO doctorDTO, PatientDTO patientDTO) {
-        return VisitDTO.builder()
-                .id(id)
-                .startDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 0, 0)))
-                .endDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 0, 0)))
-                .doctorDTO(doctorDTO)
-                .patientDTO(patientDTO)
-                .build();
-    }
-
-    private VisitCommand buildDoctorCommand() {
-        return VisitCommand.builder()
-                .startDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(16, 0, 0)))
-                .endDateTime(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(18, 0, 0)))
-                .build();
-    }
-
-    private DoctorDTO buildDoctorDTO(Long id, String email) {
-        return DoctorDTO.builder()
-                .id(id)
-                .firstName("jan")
-                .lastName("kowalski")
-                .email(email)
-                .specialization("kardiolog")
-                .institutionIds(new ArrayList<>())
-                .build();
-    }
-
-    private PatientDTO buildPatientDTO(Long id, String email) {
-        return PatientDTO.builder()
-                .id(id)
-                .email(email)
-                .idCardNo("123")
-                .firstName("jan")
-                .lastName("kowalski")
-                .phoneNumber("123456789")
-                .birthday(LocalDate.of(2000, 2, 17))
-                .build();
     }
 }

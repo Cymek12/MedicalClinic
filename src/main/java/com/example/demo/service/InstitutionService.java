@@ -3,10 +3,8 @@ package com.example.demo.service;
 import com.example.demo.exceptions.institution.InstitutionAlreadyExistException;
 import com.example.demo.exceptions.institution.InstitutionDataIsNullException;
 import com.example.demo.exceptions.institution.InstitutionNotFoundException;
-import com.example.demo.model.DoctorRequest;
 import com.example.demo.model.command.DoctorCommand;
 import com.example.demo.model.command.InstitutionCommand;
-import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.model.dto.FullInstitutionDTO;
 import com.example.demo.model.dto.InstitutionDTO;
 import com.example.demo.model.PageContent;
@@ -144,7 +142,7 @@ public class InstitutionService {
             throw new InstitutionDataIsNullException("Institution fields cannot be null");
         }
         if (institutionRepository.existsByName(institution.getName()) && !institution.getName().equals(newInstitutionData.getName())) {
-            throw new InstitutionNotFoundException("Institution with name: " + newInstitutionData.getName() + " do not exists");
+            throw new InstitutionAlreadyExistException("Institution with name: " + newInstitutionData.getName() + " already exists");
         }
     }
 }

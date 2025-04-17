@@ -46,6 +46,8 @@ services:
   patient-proxy:
     image: medical-clinic-proxy
     container_name: patient-proxy
+    environment:
+      SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_POSTCLIENT_URL: http://app:8080/visits
     ports:
       - "9090:9090"
     networks:

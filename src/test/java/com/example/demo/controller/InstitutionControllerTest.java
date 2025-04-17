@@ -4,7 +4,6 @@ import com.example.demo.exceptions.institution.InstitutionAlreadyExistException;
 import com.example.demo.exceptions.institution.InstitutionDataIsNullException;
 import com.example.demo.exceptions.institution.InstitutionNotFoundException;
 import com.example.demo.model.PageContent;
-import com.example.demo.model.command.DoctorCommand;
 import com.example.demo.model.command.InstitutionCommand;
 import com.example.demo.model.dto.FullInstitutionDTO;
 import com.example.demo.model.dto.InstitutionDTO;
@@ -21,10 +20,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.example.demo.TestDataBuilder.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -72,7 +71,7 @@ public class InstitutionControllerTest {
                         .content(objectMapper.writeValueAsString(institutionCommand))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Request fields cannot be null"))
                 .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"));
     }
@@ -135,7 +134,7 @@ public class InstitutionControllerTest {
         mockMvc.perform(get("/institutions/{name}", name)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Institution not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -168,7 +167,7 @@ public class InstitutionControllerTest {
         mockMvc.perform(put("/institutions/{name}", name)
                         .content(objectMapper.writeValueAsString(institutionCommand))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Institution not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -188,7 +187,7 @@ public class InstitutionControllerTest {
         doThrow(new InstitutionNotFoundException("Institution not found")).when(institutionService).deleteInstitutionByName(name);
         mockMvc.perform(delete("/institutions/{name}", name)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Institution not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -216,40 +215,8 @@ public class InstitutionControllerTest {
         mockMvc.perform(post("/institutions/bulk")
                         .content(objectMapper.writeValueAsString(fullInstitutionDTOs))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Institution already exists"))
                 .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"));
-    }
-
-    private DoctorCommand buildDoctorCommand(String email) {
-        return DoctorCommand.builder()
-                .firstName("jan")
-                .lastName("kowalski")
-                .email(email)
-                .password("pass")
-                .specialization("kardiolog")
-                .build();
-    }
-
-    private InstitutionDTO buildInstitutionDTO(Long id, String name) {
-        return InstitutionDTO.builder()
-                .id(id)
-                .name(name)
-                .city("lodz")
-                .zipCode("12123")
-                .street("narutowicza")
-                .buildingNumber("1")
-                .doctorIds(new ArrayList<>())
-                .build();
-    }
-
-    private InstitutionCommand buildInstitutionCommand(String name) {
-        return InstitutionCommand.builder()
-                .name(name)
-                .city("lodz")
-                .zipCode("12123")
-                .street("narutowicza")
-                .buildingNumber("1")
-                .build();
     }
 }

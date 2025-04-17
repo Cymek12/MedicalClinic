@@ -4,14 +4,10 @@ import com.example.demo.exceptions.institution.InstitutionNotFoundException;
 import com.example.demo.model.PageContent;
 import com.example.demo.model.command.InstitutionCommand;
 import com.example.demo.model.dto.InstitutionDTO;
-import com.example.demo.model.dto.PatientDTO;
 import com.example.demo.model.entity.Institution;
-import com.example.demo.model.entity.Patient;
 import com.example.demo.model.mapper.InstitutionMapper;
-import com.example.demo.model.mapper.PatientMapper;
 import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.InstitutionRepository;
-import com.example.demo.repository.PatientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -25,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.demo.TestDataBuilder.buildInstitution;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -111,17 +108,5 @@ public class InstitutionServiceTest {
                 .buildingNumber("12")
                 .build();
 
-    }
-
-
-    private Institution buildInstitution(String name) {
-        return Institution.builder()
-                .id(1L)
-                .name(name)
-                .city("lodz")
-                .zipCode("12123")
-                .street("narutowicza")
-                .buildingNumber("12")
-                .build();
     }
 }

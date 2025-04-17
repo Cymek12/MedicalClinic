@@ -53,6 +53,19 @@ public class VisitService {
         );
     }
 
+    public PageContent<VisitDTO> getAvailableVisitsProcessor(Pageable pageable, String patientEmail, String doctorEmail, String specialization, VisitDayCommand visitDayCommand) {
+        if (visitDayCommand != null && specialization != null) {
+            return getAvailableVisitsByDayAndSpecialization(visitDayCommand, specialization, pageable);
+        }
+        if (doctorEmail != null) {
+            return getAvailableVisitsByDoctor(doctorEmail, pageable);
+        }
+        if (patientEmail != null) {
+            return getVisitsByPatient(patientEmail, pageable);
+        }
+        return getAvailableVisits(pageable);
+    }
+
     public PageContent<VisitDTO> getAvailableVisits(Pageable pageable) {
         Page<Visit> visitPage = visitRepository.findAll(pageable);
         List<VisitDTO> visitDTOs = visitMapper.toDTO(visitPage.getContent().stream()
@@ -137,7 +150,7 @@ public class VisitService {
             throw new DoctorNotFoundException("Doctor with specialization: " + specialization + " does not exist");
         }
         LocalDate date = visitDayCommand.getLocalDate();
-        LocalDateTime startOfDay = date.atTime(0,0,1);
+        LocalDateTime startOfDay = date.atTime(0, 0, 1);
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
         Page<Visit> visitPage = visitRepository.findVisitsByDate(startOfDay, endOfDay, pageable);
         return new PageContent<>(

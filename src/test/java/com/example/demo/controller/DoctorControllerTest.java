@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.exceptions.doctor.DoctorDataIsNullException;
 import com.example.demo.exceptions.doctor.DoctorNotFoundException;
 import com.example.demo.model.PageContent;
+import com.example.demo.model.command.AddInstitutionCommand;
 import com.example.demo.model.command.DoctorCommand;
 import com.example.demo.model.dto.DoctorDTO;
 import com.example.demo.service.DoctorService;
@@ -18,6 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.example.demo.TestDataBuilder.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +28,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -66,7 +67,7 @@ public class DoctorControllerTest {
                         .content(objectMapper.writeValueAsString(doctorCommand))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Request data cannot be null"))
                 .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"));
     }
@@ -126,7 +127,7 @@ public class DoctorControllerTest {
         mockMvc.perform(get("/doctors/{email}", email)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Doctor not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -158,7 +159,7 @@ public class DoctorControllerTest {
         mockMvc.perform(put("/doctors/{email}", email)
                 .content(objectMapper.writeValueAsString(doctorCommand))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Doctor not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -169,7 +170,7 @@ public class DoctorControllerTest {
         doThrow(new DoctorNotFoundException("Doctor not found")).when(doctorService).deleteDoctorByEmail(email);
         mockMvc.perform(delete("/doctors/{email}", email)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Doctor not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -185,18 +186,18 @@ public class DoctorControllerTest {
 
     @Test
     void addInstitution_returnDoctorDTO() throws Exception {
-        String doctorEmail = "new@gmail.com";
-        String institutionId = "1";
+        AddInstitutionCommand addInstitutionCommand = buildAddInstitutionCommand();
         DoctorDTO doctorDTO = DoctorDTO.builder()
                 .id(1L)
                 .firstName("jan")
                 .lastName("kowalski")
                 .email("new@gmail.com")
                 .specialization("kardiolog")
-                .institutionIds(List.of(Long.valueOf(institutionId)))
+                .institutionIds(List.of(1L))
                 .build();
-        when(doctorService.addInstitution(eq(doctorEmail), eq(institutionId))).thenReturn(doctorDTO);
-        mockMvc.perform(patch("/doctors/institution/{doctorEmail}/{institutionId}", doctorEmail, institutionId)
+        when(doctorService.addInstitution(eq(addInstitutionCommand.getDoctorEmail()), eq(addInstitutionCommand.getInstitutionId()))).thenReturn(doctorDTO);
+        mockMvc.perform(patch("/doctors/institution")
+                        .content(objectMapper.writeValueAsString(addInstitutionCommand))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -211,34 +212,13 @@ public class DoctorControllerTest {
 
     @Test
     void addInstitution_returnHttpStatus() throws Exception {
-        String doctorEmail = "new@gmail.com";
-        String institutionId = "1";
-        when(doctorService.addInstitution(eq(doctorEmail), eq(institutionId))).thenThrow(new DoctorNotFoundException("Doctor not found"));
-        mockMvc.perform(patch("/doctors/institution/{doctorEmail}/{institutionId}", doctorEmail, institutionId)
+        AddInstitutionCommand addInstitutionCommand = buildAddInstitutionCommand();
+        when(doctorService.addInstitution(eq(addInstitutionCommand.getDoctorEmail()), eq(addInstitutionCommand.getInstitutionId()))).thenThrow(new DoctorNotFoundException("Doctor not found"));
+        mockMvc.perform(patch("/doctors/institution")
+                        .content(objectMapper.writeValueAsString(addInstitutionCommand))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Doctor not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
-    }
-
-    private DoctorDTO buildDoctorDTO(Long id, String email) {
-        return DoctorDTO.builder()
-                .id(id)
-                .firstName("jan")
-                .lastName("kowalski")
-                .email(email)
-                .specialization("kardiolog")
-                .institutionIds(new ArrayList<>())
-                .build();
-    }
-
-    private DoctorCommand buildDoctorCommand(String email) {
-        return DoctorCommand.builder()
-                .firstName("jan")
-                .lastName("kowalski")
-                .email(email)
-                .password("pass")
-                .specialization("kardiolog")
-                .build();
     }
 }

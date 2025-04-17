@@ -19,13 +19,14 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.example.demo.TestDataBuilder.buildPatientCommand;
+import static com.example.demo.TestDataBuilder.buildPatientDTO;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -102,7 +103,7 @@ public class PatientControllerTest {
                         .content(objectMapper.writeValueAsString(email))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Patient not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -134,7 +135,7 @@ public class PatientControllerTest {
                         .content(objectMapper.writeValueAsString(patientCommand))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Patient already exist"))
                 .andExpect(jsonPath("$.httpStatus").value("BAD_REQUEST"));
     }
@@ -154,7 +155,7 @@ public class PatientControllerTest {
         doThrow(new PatientNotFoundException("Patient not found")).when(patientService).deletePatientByEmail(email);
         mockMvc.perform(delete("/patients/{email}", email)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Patient not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -188,7 +189,7 @@ public class PatientControllerTest {
                         .content(objectMapper.writeValueAsString(patientCommand))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Patient not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
     }
@@ -222,32 +223,8 @@ public class PatientControllerTest {
                         .content(objectMapper.writeValueAsString(passwordRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Patient not found"))
                 .andExpect(jsonPath("$.httpStatus").value("NOT_FOUND"));
-    }
-
-    private PatientCommand buildPatientCommand(String email) {
-        return PatientCommand.builder()
-                .email(email)
-                .password("pass")
-                .idCardNo("123")
-                .firstName("jan")
-                .lastName("kowalski")
-                .phoneNumber("123456789")
-                .birthday(LocalDate.of(2000, 2, 17))
-                .build();
-    }
-
-    private PatientDTO buildPatientDTO(Long id, String email) {
-        return PatientDTO.builder()
-                .id(id)
-                .email(email)
-                .idCardNo("123")
-                .firstName("jan")
-                .lastName("kowalski")
-                .phoneNumber("123456789")
-                .birthday(LocalDate.of(2000, 2, 17))
-                .build();
     }
 }
