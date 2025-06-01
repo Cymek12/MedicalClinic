@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  app:
+    image: medical-clinic-app
+    container_name: spring_app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/medical-clinic
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    networks:
+      - my-network
+
+  db:
+    image: postgres:13
+    container_name: postgres_medical_clinic
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: medical-clinic
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgres
+    networks:
+      - my-network
+
+  pgadmin:
+    image: elestio/pgadmin
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - "1234:8080"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - my-network
+
+  patient-proxy:
+    image: medical-clinic-proxy
+    container_name: patient-proxy
+    environment:
+      SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_POSTCLIENT_URL: http://app:8080/visits
+    ports:
+      - "9090:9090"
+    networks:
+      - my-network
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  my-network: {}

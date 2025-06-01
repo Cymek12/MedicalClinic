@@ -1,0 +1,134 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Jakub
+      changes:
+        - createTable:
+            tableName: PATIENT
+            columns:
+              - column:
+                  name: ID
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    unique: true
+                    nullable: false
+              - column:
+                  name: EMAIL
+                  type: varchar(40)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: PASSWORD
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ID_CARD_NO
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: FIRST_NAME
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LAST_NAME
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: PHONE_NUMBER
+                  type: varchar(12)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: BIRTHDAY
+                  type: date
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2
+      author: Jakub
+      changes:
+        - createTable:
+            tableName: DOCTOR
+            columns:
+              - column:
+                  name: ID
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    unique: true
+              - column:
+                  name: FIRST_NAME
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: LAST_NAME
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: EMAIL
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: PASSWORD
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SPECIALIZATION
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 3
+      author: Jakub
+      changes:
+        - createTable:
+            tableName: INSTITUTION
+            columns:
+              - column:
+                  name: ID
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    unique: true
+              - column:
+                  name: NAME
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: CITY
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ZIP_CODE
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: STREET
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: BUILDING_NUMBER
+                  type: varchar(5)
+                  constraints:
+                    nullable: false

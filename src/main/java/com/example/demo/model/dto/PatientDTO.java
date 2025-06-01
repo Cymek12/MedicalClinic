@@ -1,15 +1,17 @@
-package com.example.demo.model;
+package com.example.demo.model.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
 @AllArgsConstructor
-public class Patient {
+@Builder
+public class PatientDTO {
+    private Long id;
     private String email;
-    private String password;
     private final String idCardNo;
     private String firstName;
     private String lastName;
